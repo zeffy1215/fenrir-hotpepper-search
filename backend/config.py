@@ -10,4 +10,5 @@ class Config:
     PORT = int(os.getenv('PORT', '8080'))
     DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
+    HOTPEPPER_API_URL = "http://webservice.recruit.co.jp/hotpepper/gourmet/v1/"
     API_KEY = os.getenv('API_KEY')
