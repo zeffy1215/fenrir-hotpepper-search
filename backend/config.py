@@ -12,3 +12,7 @@ class Config:
 
     HOTPEPPER_API_URL = "http://webservice.recruit.co.jp/hotpepper/gourmet/v1/"
     API_KEY = os.getenv('API_KEY')
+
+    # HotPepperのAPIのリクエストタイムアウト時間
+    TIMEOUT_CONNECT = float(os.getenv("TIMEOUT_CONNECT", "3.0"))
+    TIMEOUT_READ = float(os.getenv("TIMEOUT_READ", "7.5"))
