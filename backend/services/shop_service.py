@@ -1,6 +1,6 @@
 import requests
 from requests.exceptions import Timeout
-from backend.exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperGatewayError ,HotpepperApiKeyError, HotpepperBadRequestError, HotpepperError
+from exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperGatewayError ,HotpepperApiKeyError, HotpepperBadRequestError, HotpepperError
 from config import Config
 
 # codeが取りうる範囲(ホットペッパーのreference.htmlの13を参照)

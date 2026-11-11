@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from backend.exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperError
+from exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperError
 from services import shop_service
 
 shop_bp = Blueprint('shop_bp', __name__)
