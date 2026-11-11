@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from backend.exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperError
 from services import shop_service
 
 shop_bp = Blueprint('shop_bp', __name__)
@@ -32,4 +33,12 @@ def search():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400 # BadRequest
 
-    return jsonify(shop_service.search(lat, lng, search_range)), 200
+    try:
+        res = shop_service.search(lat, lng, search_range)
+    except HotpepperTimeoutError as e: 
+        return jsonify({"error": str(e)}), 504 # Gateway Timeout
+    except HotpepperError as e:
+        print(str(e)) # TODO: print→ログファイル::残す際は開発者にわかりやすいよう
+        return jsonify({"error": "サーバーエラーが発生しました"}), 502 # Bad Gateway
+    
+    return jsonify(res), 200
