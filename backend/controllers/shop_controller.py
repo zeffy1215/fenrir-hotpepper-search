@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from services import shop_service
 
 shop_bp = Blueprint('shop_bp', __name__)
 
@@ -30,3 +31,5 @@ def search():
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 400 # BadRequest
+
+    return jsonify(shop_service.search(lat, lng, search_range)), 200
