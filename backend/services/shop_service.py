@@ -1,4 +1,6 @@
 import requests
+from requests.exceptions import Timeout
+from backend.exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperGatewayError ,HotpepperApiKeyError, HotpepperBadRequestError, HotpepperError
 from config import Config
 
 def search(lat:float, lng:float, search_range:int):
