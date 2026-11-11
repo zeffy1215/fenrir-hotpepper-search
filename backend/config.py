@@ -17,5 +17,5 @@ class Config:
     API_KEY = os.getenv('API_KEY')
 
     # HotPepperのAPIのリクエストタイムアウト時間
-    TIMEOUT_CONNECT = float(os.getenv("TIMEOUT_CONNECT", "3.0"))
-    TIMEOUT_READ = float(os.getenv("TIMEOUT_READ", "7.5"))
+    HOTPEPPER_CONNECT_TIMEOUT = 3.5
+    HOTPEPPER_READ_TIMEOUT = 7.5
