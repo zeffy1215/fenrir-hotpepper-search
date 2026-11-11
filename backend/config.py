@@ -10,4 +10,12 @@ class Config:
     PORT = int(os.getenv('PORT', '8080'))
     DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
+    # HotPepperのAPIのURL
+    HOTPEPPER_API_URL = "https://webservice.recruit.co.jp/hotpepper/gourmet/v1/"
+    
+    # HotPepperのAPIキー
     API_KEY = os.getenv('API_KEY')
+
+    # HotPepperのAPIのリクエストタイムアウト時間
+    HOTPEPPER_CONNECT_TIMEOUT = 3.5
+    HOTPEPPER_READ_TIMEOUT = 7.5
