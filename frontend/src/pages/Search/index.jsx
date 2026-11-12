@@ -19,28 +19,28 @@ function SearchShops() {
     // const [error, setError] = useState(null);
 
     useEffect (() => {
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setLat(position.coords.latitude);
-                    setLng(position.coords.longitude);
-                    setLoading(false);
-                },
-                (error) => {
-                    console.error(`エラー: ${error.code} - ${error.message}`);
-                    // setError(`エラー: ${error.code} - ${error.message}`);
-                    setLoading(false);
-                },
-                {
-                    enableHighAccuracy: true,   // 高精度モード：ON
-                    timeout: 10000,             // タイムアウト時間(10秒)
-                    maximumAge: 0               // キャッシュの有効時間
-                }
-            )
-        } else {
+        if (!("geolocation" in navigator)) {
             console.log("geolocation が使用不可になっています");
             // setError("geolocation が使用不可になっています")
         }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setLat(position.coords.latitude);
+                setLng(position.coords.longitude);
+                setLoading(false);
+            },
+            (error) => {
+                console.error(`エラー: ${error.code} - ${error.message}`);
+                // setError(`エラー: ${error.code} - ${error.message}`);
+                setLoading(false);
+            },
+            {
+                enableHighAccuracy: true,   // 高精度モード：ON
+                timeout: 10000,             // タイムアウト時間(10秒)
+                maximumAge: 0               // キャッシュの有効時間
+            }
+        )  
     }, []);
 
     function handleRangeChange(e) {
