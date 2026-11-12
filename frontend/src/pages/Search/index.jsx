@@ -19,30 +19,28 @@ function SearchShops() {
     // const [error, setError] = useState(null);
 
     useEffect (() => {
-        const fetchCurrentPosition = async () => {
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        setLat(position.coords.latitude);
-                        setLng(position.coords.longitude);
-                    },
-                    (error) => {
-                        console.error(`エラー: ${error.code} - ${error.message}`);
-                        // setError(`エラー: ${error.code} - ${error.message}`);
-                    },
-                    {
-                        enableHighAccuracy: true,   // 高精度モード：ON
-                        timeout: 10000,             // タイムアウト時間(10秒)
-                        maximumAge: 0               // キャッシュの有効時間
-                    }
-                )
-            } else {
-                console.log("geolocation が使用不可になっています");
-                // setError("geolocation が使用不可になっています")
-            }
-            setLoading(false);
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setLat(position.coords.latitude);
+                    setLng(position.coords.longitude);
+                    setLoading(false);
+                },
+                (error) => {
+                    console.error(`エラー: ${error.code} - ${error.message}`);
+                    // setError(`エラー: ${error.code} - ${error.message}`);
+                    setLoading(false);
+                },
+                {
+                    enableHighAccuracy: true,   // 高精度モード：ON
+                    timeout: 10000,             // タイムアウト時間(10秒)
+                    maximumAge: 0               // キャッシュの有効時間
+                }
+            )
+        } else {
+            console.log("geolocation が使用不可になっています");
+            // setError("geolocation が使用不可になっています")
         }
-        fetchCurrentPosition();
     }, []);
 
     function handleRangeChange(e) {
