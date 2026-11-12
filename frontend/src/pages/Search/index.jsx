@@ -25,8 +25,6 @@ function SearchShops() {
                     (position) => {
                         setLat(position.coords.latitude);
                         setLng(position.coords.longitude);
-
-                        console.log(lat, lng);
                     },
                     (error) => {
                         console.error(`エラー: ${error.code} - ${error.message}`);
