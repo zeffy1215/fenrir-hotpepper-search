@@ -74,7 +74,7 @@ function SearchShops() {
             <div>
                 <Select id="range" defaultValue={{ value: "3", label: "1km" }} onChange={handleRangeChange} options={range_options}>
                 </Select>
-                <button id="research-button" onClick={handleSearchClick}>検索</button>
+                <button id="search-button" onClick={handleSearchClick}>検索</button>
             </div>
         </main>
     );
