@@ -7,10 +7,10 @@ def validate_number(value, min_value, max_value, converter, name, required=True)
 
     try:
         value = converter(value)
-    except ValueError:
-        raise ValidationError(f"{name}に数値以外が入っています")
-    except TypeError:
-        raise ValidationError(f"{name}のパラメーターが設定されていません")
+    except ValueError as e:
+        raise ValidationError(f"{name}に数値以外が入っています") from e
+    except TypeError as e:
+        raise ValidationError(f"{name}のパラメーターが設定されていません") from e
 
     if not (min_value <= value <= max_value):
         raise ValidationError(f"{name}の値が範囲外です")
