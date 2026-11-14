@@ -1,0 +1,23 @@
+main {
+    margin: 10px 20px;
+}
+.shopList {
+    padding-left: 10px;
+}
+
+.shopGrid {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    padding: 10px 0;
+    border-top: solid 1px #ddd;
+    min-height: 180px;
+}
+
+.photo {
+    margin: auto;
+    display: block;
+}
+
+.photo > img {
+    width: 220px;
+}
