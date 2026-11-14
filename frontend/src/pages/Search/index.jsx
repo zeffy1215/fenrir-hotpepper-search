@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import Select from 'react-select';
-import { searchShops } from "../../api/shops";
 
 const range_options = [
     { value: "1", label: "300m" },
@@ -17,6 +17,8 @@ function SearchShops() {
 
     const [loading, setLoading] = useState(true)
     // const [error, setError] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect (() => {
         if (!("geolocation" in navigator)) {
@@ -48,15 +50,13 @@ function SearchShops() {
     }
 
     async function handleSearchClick() {
-        const params = {
+        const params = new URLSearchParams({
             "lat": lat,
             "lng": lng,
             "range": Number(range)
-        };
-        // テスト用にどうページに出力
-        // TODO: ページ遷移(検索結果画面)
-        const res = await searchShops(params);
-        console.log(res);
+        });
+        
+        navigate(`/result?${params}`);
     }
 
     if (loading) return (
