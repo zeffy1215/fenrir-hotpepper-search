@@ -4,20 +4,6 @@ from services import shop_service
 
 shop_bp = Blueprint('shop_bp', __name__)
 
-def validate_value(value, min_value, max_value, converter, name):
-    try:
-        value = converter(value)
-    except ValueError:
-        raise ValueError(f"{name}に数値以外が入っています")
-    except TypeError:
-        raise ValueError(f"{name}のパラメーターが設定されていません")
-
-    if not (min_value <= value <= max_value):
-        raise ValueError(f"{name}の値が範囲外です")
-
-    return value
-    
-
 @shop_bp.route('/search')
 def search():
     lat = request.args.get("lat")             # 緯度(-90°~90°)
