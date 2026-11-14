@@ -3,7 +3,7 @@ from exceptions.validation_exception import ValidationError
 # 数値に関するバリデーションチェック用
 def validate_number(value, min_value, max_value, converter, name, required=True):
     if not required and not value:
-        return
+        return None
 
     try:
         value = converter(value)
