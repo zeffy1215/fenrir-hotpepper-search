@@ -1,6 +1,9 @@
 import requests
 from requests.exceptions import Timeout
 from exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperGatewayError ,HotpepperApiKeyError, HotpepperBadRequestError, HotpepperError
+from dataclasses import asdict
+from dto.shop_search_params import ShopSearchByLocationParamsDto
+from dto.shop_search_response import ShopPhoto, ShopInfo, ShopListResponse
 from config import Config
 
 # codeが取りうる範囲(ホットペッパーのreference.htmlの13を参照)
@@ -8,14 +11,37 @@ HOTPEPPER_ERROR_SERVER = 1000      # サーバー障害エラー
 HOTPEPPER_ERROR_AUTH = 2000        # APIキーまたはIPアドレスの認証エラー
 HOTPEPPER_ERROR_PARAMETER = 3000   # パラメータ不正エラー
 
-def search(lat:float, lng:float, search_range:int):
-    params = {
-        "key": Config.API_KEY,
-        "lat": lat,
-        "lng": lng,
-        "range": search_range,
-        "format": "json"
-    }
+# type=liteを指定したときに取得されないものと入れ子のものは、getで取得
+def to_shop_info(shop: dict) -> ShopInfo:
+    return ShopInfo(
+        id=shop["id"],
+        name=shop["name"],
+        name_kana=shop.get("name_kana"),
+
+        address=shop["address"],
+        access=shop["access"],
+
+        genre_name=shop.get("genre", {}).get("name"),
+        genre_catch=shop.get("genre", {}).get("catch"),
+        sub_genre=shop.get("sub_genre", {}).get("name"),
+
+        budget=shop.get("budget", {}).get("average"),
+        catch=shop["catch"],
+        open=shop.get("open"),
+        close=shop.get("close"),
+
+        photo=ShopPhoto(
+            large=shop.get("photo", {}).get("pc", {}).get("l"),
+            medium=shop.get("photo", {}).get("pc", {}).get("m"),
+            small=shop.get("photo", {}).get("pc", {}).get("s")
+        )
+    )
+
+def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
+    params = {k: v for k, v in asdict(params).items() if v is not None}
+    params["key"] = Config.API_KEY
+    params["format"] = "json"
+
     try:
         response = requests.get(
             url=Config.HOTPEPPER_API_URL,
@@ -26,6 +52,7 @@ def search(lat:float, lng:float, search_range:int):
         raise HotpepperTimeoutError("ホットペッパーAPIへのリクエストがタイムアウトしました") from e
 
     data = response.json()
+    results = data["results"]
 
     if 'error' in data["results"]:
         errors = data["results"]["error"]
@@ -41,5 +68,17 @@ def search(lat:float, lng:float, search_range:int):
             raise HotpepperBadRequestError("パラメーターが正しくありません(API_KEYなどの必須パラメータが不足している可能性があります) (code=3000)")
         else:
             raise HotpepperError(f"ホットペッパーAPI呼び出し中に不明なエラーが発生しました (code={str(code)})")
+
+    
+    shop_list = results["shop"]
+
+    shops = [to_shop_info(shop) for shop in shop_list]
+    
+    response = ShopListResponse(
+        available=results["results_available"],
+        count=int(results["results_returned"]),
+        start=results["results_start"],
+        shops=shops
+    )
             
-    return data
+    return response

@@ -1,40 +1,55 @@
 from flask import Blueprint, request, jsonify
 from exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperError
+from exceptions.validation_exception import ValidationError
 from services import shop_service
+from dto.shop_search_params import ShopSearchByLocationParamsDto
 
 shop_bp = Blueprint('shop_bp', __name__)
 
-def validate_value(value, min_value, max_value, converter, name):
-    try:
-        value = converter(value)
-    except ValueError:
-        raise ValueError(f"{name}に数値以外が入っています")
-    except TypeError:
-        raise ValueError(f"{name}のパラメーターが設定されていません")
-
-    if not (min_value <= value <= max_value):
-        raise ValueError(f"{name}の値が範囲外です")
-
-    return value
-    
-
 @shop_bp.route('/search')
 def search():
-    lat = request.args.get("lat")             # 緯度(-90°~90°)
-    lng = request.args.get("lng")             # 経度(-180°~180°)
-    search_range = request.args.get("range")  # 検索範囲(1,2,3,4,5)
+    lat = request.args.get("lat")
+    lng = request.args.get("lng")
+    search_range = request.args.get("range")
 
+    start = request.args.get("start")
+    count = request.args.get("count")
+    order = request.args.get("order")
+
+    free_drink = request.args.get("free_drink")
+    free_food = request.args.get("free_food")
+    card = request.args.get("card")
+    parking = request.args.get("parking")
+    lunch = request.args.get("lunch")
+    midnight = request.args.get("midnight")
+
+    args = {
+        "lat": lat,
+        "lng": lng,
+        "range": search_range,
+
+        "start": start,
+        "count": count,
+        "order": order,
+
+        "free_drink": free_drink,
+        "free_food": free_food,
+        "card": card,
+        "parking": parking,
+        "lunch": lunch,
+        "midnight": midnight,
+    }
+
+    args = {k: v for k, v in args.items() if v}
+    
     # バリデーション
     try:
-        lat = validate_value(lat, min_value=-90.0, max_value=90.0, converter=float, name="緯度")
-        lng = validate_value(lng, min_value=-180.0, max_value=180.0, converter=float, name="経度")
-        search_range = validate_value(search_range, min_value=1, max_value=5, converter=int, name="検索範囲")
-
-    except ValueError as e:
+        params = ShopSearchByLocationParamsDto(**args)
+    except ValidationError as e:
         return jsonify({"error": str(e)}), 400 # BadRequest
 
     try:
-        res = shop_service.search(lat, lng, search_range)
+        res = shop_service.search(params)
     except HotpepperTimeoutError as e: 
         return jsonify({"error": str(e)}), 504 # Gateway Timeout
     except HotpepperError as e:
