@@ -23,10 +23,7 @@ class ShopInfo:
     access: str                 # お店アクセス
 
     genre_name: str             # お店のジャンル(name)
-    genre_catch: str            # お店のジャンル(catch)
     sub_genre: str              # お店のサブジャンル
-
-    budget: str                 # 平均ディナー予算
 
     catch: str                  # お店キャッチ
 
