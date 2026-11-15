@@ -29,6 +29,11 @@ function Result() {
     const lunch = searchParams.get("lunch");
     const midnight = searchParams.get("midnight");
 
+    const [topButton, setTopButton] = useState(true);
+    const [preButton, setPreButton] = useState(true);
+    const [nextButton, setNextButton] = useState(true);
+    const [lastButton, setLastButton] = useState(true);
+
     const [results, setResults] = useState({});
 
     const [loading, setLoading] = useState(true);
@@ -57,7 +62,17 @@ function Result() {
                     Object.entries(obj).filter(([k, v]) => v !== null)
                 );
                 const res = await searchShops(params);
-                if (!ignore) setResults(res);
+                if (!ignore) {
+                    setResults(res);
+                    const currentPage = Math.ceil(res.start / res.count);
+                    const maxPage = Math.ceil(res.available / res.count);
+
+                    setTopButton(!(currentPage > 1));
+                    setPreButton(!(currentPage > 1));
+                    setLastButton(!(currentPage < maxPage));
+                    setNextButton(!(currentPage < maxPage));
+                    
+                }
 
             } catch (err) {
                 console.error(err);
@@ -73,12 +88,20 @@ function Result() {
         };
     }, [start, order]);
 
-    const page = () => {
-        return Math.ceil(results.start, results.count)
+    const currentPage = () => {
+        return Math.ceil(results.start / results.count);
+    }
+
+    const maxPage = () => {
+        return Math.ceil(results.available / results.count);
     }
 
     function handleOrderChange(e) {
-        setOrder(e.value)
+        setOrder(e.value);
+    }
+
+    function handlePageChange(page) {
+        setStart(10 * (page - 1) + 1);
     }
 
     if (loading) {
@@ -147,9 +170,14 @@ function Result() {
                     </li>
                 ))}
             </ul>
-            <div>
-                <p>{page()}ページ目</p>
+            <div className={styles.pageBox}>
+                <button onClick={() => handlePageChange(1)} disabled={topButton}>{"<<"}</button>
+                <button onClick={() => handlePageChange(currentPage()-1)} disabled={preButton}>{"<"} 前</button>
+                <p>{currentPage()} / {maxPage()}</p>
+                <button onClick={() => handlePageChange(currentPage()+1)} disabled={nextButton}>次 {">"}</button>
+                <button onClick={() => handlePageChange(maxPage())} disabled={lastButton}>{">>"}</button>
             </div>
+
         </main>
     )
 }
