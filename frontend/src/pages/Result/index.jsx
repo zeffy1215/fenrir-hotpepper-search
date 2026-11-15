@@ -115,13 +115,34 @@ function Result() {
                             <p className={styles.shopName}>{shop.name}</p>
                             <p className={styles.shopGenre}>{shop.genre_name}
                                 {shop.sub_genre ? (
-                                    <> / {shop.sub_genre}</>
+                                    <> / {shop.sub_genre} </>
                                 ): (<></>)}
+                                <span className={styles.shopCatch}>| {shop.catch}</span>
                             </p>
-                            <p className={styles.shopCatch}>{shop.catch}</p>
-                            <p className={styles.shopOpen}>{shop.open}</p>
-                            <p className={styles.shopClose}>{shop.close}</p>
-                            <p className={styles.shopAccess}>{shop.access}</p>
+
+                            <p className={styles.shopAccess}>📍{shop.access}</p>
+
+                            <div className={styles.shopOpenBox}>
+                                <p className={styles.shopOpenTitle}>営業時間</p>
+                                <div className={styles.shopOpenGrid}>
+                                    {Array.isArray(shop.open) ? (
+                                        <>
+                                            {shop.open.map((o) => (
+                                                <>
+                                                    <span className={styles.shopOpenDays}>{o.days}</span>
+                                                    <span className={styles.shopOpenMark}>:</span>
+                                                    <span className={styles.shopOpenHours}>{o.hours}</span>
+                                                </>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <p className={styles.shopOpen}>{shop.open}</p>
+                                    )}
+                                    <span className={styles.shopCloseDays}>定休日</span>
+                                    <span className={styles.shopCloseMark}>:</span>
+                                    <span className={styles.shopCloseHours}>{shop.close}</span>
+                                </div>
+                            </div>
                         </div>
                     </li>
                 ))}
