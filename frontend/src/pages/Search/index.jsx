@@ -53,7 +53,11 @@ function SearchShops() {
         const params = new URLSearchParams({
             "lat": lat,
             "lng": lng,
-            "range": Number(range)
+            "range": Number(range),
+            "start": 1,
+            "count": 10,
+            "order": 1,
+            "type": "location"
         });
         
         navigate(`/result?${params}`);
