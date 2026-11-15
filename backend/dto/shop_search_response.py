@@ -10,6 +10,14 @@ class ShopPhoto:
     small: str                  # 店舗トップ写真(小)
 
 """
+お店の営業時間を曜日ごとに分けたもの
+"""
+@dataclass
+class ShopOpen:
+    days: str                   # 曜日
+    hours: str                  # 営業時間
+
+"""
 検索結果の一覧に表示する、店舗1件分の情報
 ホットペッパーAPIの店舗情報のうち、一覧画面で必要な項目だけを持つ。
 """
@@ -27,7 +35,7 @@ class ShopInfo:
 
     catch: str                  # お店キャッチ
 
-    open: str                   # 営業時間
+    open: list[ShopOpen] | str  # 営業時間
     close: str                  # 定休日
 
     photo: ShopPhoto            # 店舗トップ写真
