@@ -1,15 +1,23 @@
+import re
 import requests
 from requests.exceptions import Timeout
 from exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperGatewayError ,HotpepperApiKeyError, HotpepperBadRequestError, HotpepperError
 from dataclasses import asdict
 from dto.shop_search_params import ShopSearchByLocationParamsDto
-from dto.shop_search_response import ShopPhoto, ShopInfo, ShopListResponse
+from dto.shop_search_response import ShopPhoto, ShopOpen, ShopInfo, ShopListResponse
 from config import Config
 
 # codeが取りうる範囲(ホットペッパーのreference.htmlの13を参照)
 HOTPEPPER_ERROR_SERVER = 1000      # サーバー障害エラー
 HOTPEPPER_ERROR_AUTH = 2000        # APIキーまたはIPアドレスの認証エラー
 HOTPEPPER_ERROR_PARAMETER = 3000   # パラメータ不正エラー
+
+# 曜日：
+def format_open(text):
+    matches = re.findall(r"([月火水木金土日祝前、～]+):([^月火水木金土日祝前、]+)", text)
+    if matches:
+        return [ShopOpen(days=day, hours=hour) for (day, hour) in matches]
+    return text
 
 # type=liteを指定したときに取得されないものと入れ子のものは、getで取得
 def to_shop_info(shop: dict) -> ShopInfo:
@@ -22,12 +30,10 @@ def to_shop_info(shop: dict) -> ShopInfo:
         access=shop["access"],
 
         genre_name=shop.get("genre", {}).get("name"),
-        genre_catch=shop.get("genre", {}).get("catch"),
         sub_genre=shop.get("sub_genre", {}).get("name"),
 
-        budget=shop.get("budget", {}).get("average"),
         catch=shop["catch"],
-        open=shop.get("open"),
+        open=format_open((shop.get("open"))),
         close=shop.get("close"),
 
         photo=ShopPhoto(
