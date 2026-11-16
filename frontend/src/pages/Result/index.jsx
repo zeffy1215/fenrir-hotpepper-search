@@ -257,7 +257,7 @@ function Result() {
                         }
                     }}
                 />
-                <span> / {maxPage}</span>
+                <span> / <span className={styles.inputMaxValue}>{maxPage}</span></span>
             </div>
         </main>
     )

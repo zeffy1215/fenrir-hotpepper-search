@@ -171,3 +171,24 @@ button {
     border-radius: 15%;
     background: #1565C0;
 }
+
+.pageInputBox {
+    margin-top: 15px;
+}
+
+.pageInput {
+    margin-right: 10px;
+    padding-left: 12px;
+    text-align: center;
+    font-size: 18px;
+    min-width: 60px;
+    min-height: 30px;
+}
+
+.pageInputBox > span {
+    font-size: 18px;
+}
+
+.inputMaxValue {
+    margin-left: 10px;
+}
