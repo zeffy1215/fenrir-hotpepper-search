@@ -34,19 +34,12 @@ function Result() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const [isRewriteParams, setIsRewriteParams] = useState(false);
-
     const navigate = useNavigate();
     const currentPage = Math.ceil(start / count);
 
     const [inputPageValue, setInputPageValue] = useState(String(currentPage));
 
     useEffect (() => {
-        // if (isRewriteParams) {
-        //     setError("クエリパラメータが書き換えられています");
-        //     return;
-        // }
-
         let ignore = false;
 
         const fetchShops = async () => {
@@ -77,7 +70,6 @@ function Result() {
             } catch (err) {
                 console.error(err);
             } finally {
-                setIsRewriteParams(true);
                 if (!ignore) setLoading(false);
             }
         }
@@ -120,8 +112,8 @@ function Result() {
     } 
 
     function handleOrderChange(e) {
-        setIsRewriteParams(false);
         setSearchParams((s) => {
+            s.set("start", 1);
             s.set("order", e.value);
             return s;
         })
@@ -142,7 +134,6 @@ function Result() {
             return;
         }
 
-        setIsRewriteParams(false);
         const transitionPage = count * (page - 1) + 1
         setSearchParams((s) => {
             s.set("start", transitionPage);
