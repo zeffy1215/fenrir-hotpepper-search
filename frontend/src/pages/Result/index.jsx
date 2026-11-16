@@ -17,10 +17,10 @@ function Result() {
     const lng = searchParams.get("lng");
     const range = searchParams.get("range");
 
-    const [start, setStart] = useState(searchParams.get("start") ?? 1);
+    const start = searchParams.get("start") ?? 1;
     const count = Number(searchParams.get("count") ?? 10);
 
-    const [order, setOrder] = useState(searchParams.get("order"));
+    const order = searchParams.get("order");
 
     const free_drink = Number(searchParams.get("free_drink"));
     const free_food = Number(searchParams.get("free_food"));
@@ -121,7 +121,6 @@ function Result() {
 
     function handleOrderChange(e) {
         setIsRewriteParams(false);
-        setOrder(e.value);
         setSearchParams((s) => {
             s.set("order", e.value);
             return s;
@@ -145,7 +144,6 @@ function Result() {
 
         setIsRewriteParams(false);
         const transitionPage = count * (page - 1) + 1
-        setStart(transitionPage);
         setSearchParams((s) => {
             s.set("start", transitionPage);
             return s;
