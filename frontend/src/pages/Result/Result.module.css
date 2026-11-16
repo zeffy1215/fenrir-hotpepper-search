@@ -29,6 +29,7 @@ button {
 
 .orderSelect {
     min-width: 200px;
+    cursor: pointer!important;
 }
 
 .otherOrderSelect {
@@ -180,6 +181,15 @@ button {
     color: white;
     border-radius: 15%;
     background: #1565C0;
+}
+
+button.pageButton:hover {
+    font-size: 18px!important;
+    text-decoration: underline;
+}
+
+button.pageButton:disabled {
+    cursor: not-allowed!important;
 }
 
 .pageInputBox {
