@@ -62,14 +62,24 @@ button {
 
 .info {
     margin-left: 10px;
+    text-align: left;
 }
 
 .shopName {
     text-align: left;
-    padding-left: 5px;
+    display: inline-block;
+    padding-left: 10px;
     font-size: 24px;
     margin-bottom: 10px;
     cursor: pointer;
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.shopName:hover {
+    transform: scale(102%);
+    text-decoration: underline;
 }
 
 .shopGenre {

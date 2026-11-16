@@ -1,5 +1,5 @@
 import { useState, useEffect, Fragment } from "react";
-import { useSearchParams, useNavigate } from "react-router";
+import { useSearchParams, useNavigate, Link } from "react-router";
 import Select from 'react-select';
 import { searchShops } from "../../api/shops";
 import styles from "./Result.module.css";
@@ -101,16 +101,6 @@ function Result() {
         return [1, 2, "...", currentPage-3, currentPage-2, currentPage-1, currentPage, currentPage+1, currentPage+2, currentPage+3, "...", maxPage-1, maxPage];
     };
     
-    // TODO: 店舗詳細画面ができたら、ログに出力ではなくページ遷移させる動作に変更する
-    function handleShopNameCkick(id) {
-        const params = new URLSearchParams({
-            "id": id
-        });
-
-        // navigate(`detail?${params}`);
-        console.log(`detail?${params}`);
-    } 
-
     function handleOrderChange(e) {
         setSearchParams((s) => {
             s.set("start", 1);
@@ -168,7 +158,17 @@ function Result() {
                         {type === "location" ? (
                             <div className={styles.orderSelectBox}>
                                 <label htmlFor="orderSelect">表示順：</label>
-                                <Select id="orderSelect" className={styles.orderSelect} options={location_order_options} value={location_order_options.find(e => e.value === order)} onChange={handleOrderChange}></Select>
+                                <Select 
+                                    id="orderSelect"
+                                    className={styles.orderSelect}
+                                    styles={{ 
+                                        control: (base) => ({...base, cursor: "pointer"}),
+                                        option: (base) => ({...base, cursor: "pointer"}),
+                                    }}
+                                    options={location_order_options}
+                                    value={location_order_options.find(e => e.value === order)}
+                                    onChange={handleOrderChange}
+                                ></Select>
                             </div>
                         ) : (
                             <p className={styles.otherOrderSelect}>おすすめ順で表示中</p>
@@ -183,7 +183,7 @@ function Result() {
                             <img src={shop.photo.large} alt="店舗画像"></img>
                         </div>
                         <div className={styles.info}>
-                            <p onClick={() => handleShopNameCkick(shop.id)} className={styles.shopName}>{shop.name}</p>
+                            <Link to={`/detail?id=${shop.id}`} className={styles.shopName}>{shop.name}</Link>
                             <p className={styles.shopGenre}>{shop.genre_name}
                                 {shop.sub_genre ? (
                                     <> / {shop.sub_genre} </>
