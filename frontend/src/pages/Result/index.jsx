@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router";
+import { useState, useEffect, Fragment } from "react";
+import { useSearchParams, useNavigate } from "react-router";
 import Select from 'react-select';
 import { searchShops } from "../../api/shops";
 import styles from "./Result.module.css";
@@ -10,35 +10,43 @@ const location_order_options = [
 ]
 
 function Result() {
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const type = searchParams.get("type") ?? "other";
 
     const lat = searchParams.get("lat");
     const lng = searchParams.get("lng");
     const range = searchParams.get("range");
 
-    const [start, setStart] = useState(searchParams.get("start"));
-    const count = searchParams.get("count");
+    const [start, setStart] = useState(searchParams.get("start") ?? 1);
+    const count = Number(searchParams.get("count") ?? 10);
 
     const [order, setOrder] = useState(searchParams.get("order"));
 
-    const free_drink = searchParams.get("free_drink");
-    const free_food = searchParams.get("free_food");
-    const card = searchParams.get("card");
-    const parking = searchParams.get("parking");
-    const lunch = searchParams.get("lunch");
-    const midnight = searchParams.get("midnight");
-
-    const [topButton, setTopButton] = useState(true);
-    const [preButton, setPreButton] = useState(true);
-    const [nextButton, setNextButton] = useState(true);
-    const [lastButton, setLastButton] = useState(true);
+    const free_drink = Number(searchParams.get("free_drink"));
+    const free_food = Number(searchParams.get("free_food"));
+    const card = Number(searchParams.get("card"));
+    const parking = Number(searchParams.get("parking"));
+    const lunch = Number(searchParams.get("lunch"));
+    const midnight = Number(searchParams.get("midnight"));
 
     const [results, setResults] = useState({});
 
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const [isRewriteParams, setIsRewriteParams] = useState(false);
+
+    const navigate = useNavigate();
+    const currentPage = Math.ceil(start / count);
+
+    const [inputPageValue, setInputPageValue] = useState(String(currentPage));
 
     useEffect (() => {
+        // if (isRewriteParams) {
+        //     setError("クエリパラメータが書き換えられています");
+        //     return;
+        // }
+
         let ignore = false;
 
         const fetchShops = async () => {
@@ -64,19 +72,12 @@ function Result() {
                 const res = await searchShops(params);
                 if (!ignore) {
                     setResults(res);
-                    const currentPage = Math.ceil(res.start / res.count);
-                    const maxPage = Math.ceil(res.available / res.count);
-
-                    setTopButton(!(currentPage > 1));
-                    setPreButton(!(currentPage > 1));
-                    setLastButton(!(currentPage < maxPage));
-                    setNextButton(!(currentPage < maxPage));
-                    
                 }
 
             } catch (err) {
                 console.error(err);
             } finally {
+                setIsRewriteParams(true);
                 if (!ignore) setLoading(false);
             }
         }
@@ -86,22 +87,69 @@ function Result() {
         return () => {
             ignore = true;
         };
-    }, [start, order]);
+    }, [searchParams]);
 
-    const currentPage = () => {
-        return Math.ceil(results.start / results.count);
-    }
+    useEffect(() => {
+        setInputPageValue(currentPage);
+    }, [currentPage]);
 
-    const maxPage = () => {
-        return Math.ceil(results.available / results.count);
-    }
+    const pageList = () => {
+        if (maxPage <= 14) {
+            return Array.from({ length: maxPage }, (_, i) => i + 1);
+        }
+
+        if (currentPage <= 7) {
+            return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, "...", maxPage-1, maxPage];
+        }
+
+        if (maxPage - currentPage <= 7) {
+            return [...[1, 2, "..."], ...Array.from({ length: 10 }, (_, i) => maxPage - 9 + i)];
+        }
+
+        return [1, 2, "...", currentPage-3, currentPage-2, currentPage-1, currentPage, currentPage+1, currentPage+2, currentPage+3, "...", maxPage-1, maxPage];
+    };
+    
+    // TODO: 店舗詳細画面ができたら、ログに出力ではなくページ遷移させる動作に変更する
+    function handleShopNameCkick(id) {
+        const params = new URLSearchParams({
+            "id": id
+        });
+
+        // navigate(`detail?${params}`);
+        console.log(`detail?${params}`);
+    } 
 
     function handleOrderChange(e) {
+        setIsRewriteParams(false);
         setOrder(e.value);
+        setSearchParams((s) => {
+            s.set("order", e.value);
+            return s;
+        })
     }
 
-    function handlePageChange(page) {
-        setStart(10 * (page - 1) + 1);
+    function handlePageChange(value) {
+        let page;
+        page = Number(value);
+        if (!Number.isInteger(page)) {
+            alert(`数値以外が入力されました。\n（半角数字で入力してください）`);
+            setInputPageValue(String(currentPage));
+            return;
+        }
+        if (page === currentPage) return;
+        if (page < 1 || maxPage < page) {
+            alert(`範囲外の数値が入力されました。\n（入力可能範囲：1〜${maxPage}）`);
+            setInputPageValue(String(currentPage));
+            return;
+        }
+
+        setIsRewriteParams(false);
+        const transitionPage = count * (page - 1) + 1
+        setStart(transitionPage);
+        setSearchParams((s) => {
+            s.set("start", transitionPage);
+            return s;
+        })
     }
 
     if (loading) {
@@ -111,6 +159,17 @@ function Result() {
             </main>
         );
     }
+
+    if (error) {
+        return (
+            <p>{error}</p>
+        )
+    }
+
+    const maxPage = Math.ceil(results.available / count)
+    const preButton = !(currentPage > 1);
+    const nextButton = !(currentPage < maxPage);
+
     return (
         <main>
             <h2>検索結果</h2>
@@ -135,7 +194,7 @@ function Result() {
                             <img src={shop.photo.large} alt="店舗画像"></img>
                         </div>
                         <div className={styles.info}>
-                            <p className={styles.shopName}>{shop.name}</p>
+                            <p onClick={() => handleShopNameCkick(shop.id)} className={styles.shopName}>{shop.name}</p>
                             <p className={styles.shopGenre}>{shop.genre_name}
                                 {shop.sub_genre ? (
                                     <> / {shop.sub_genre} </>
@@ -150,12 +209,12 @@ function Result() {
                                 <div className={styles.shopOpenGrid}>
                                     {Array.isArray(shop.open) ? (
                                         <>
-                                            {shop.open.map((o) => (
-                                                <>
+                                            {shop.open.map((o, index) => (
+                                                <Fragment key={index}>
                                                     <span className={styles.shopOpenDays}>{o.days}</span>
                                                     <span className={styles.shopOpenMark}>:</span>
                                                     <span className={styles.shopOpenHours}>{o.hours}</span>
-                                                </>
+                                                </Fragment>
                                             ))}
                                         </>
                                     ) : (
@@ -171,13 +230,46 @@ function Result() {
                 ))}
             </ul>
             <div className={styles.pageBox}>
-                <button onClick={() => handlePageChange(1)} disabled={topButton}>{"<<"}</button>
-                <button onClick={() => handlePageChange(currentPage()-1)} disabled={preButton}>{"<"} 前</button>
-                <p>{currentPage()} / {maxPage()}</p>
-                <button onClick={() => handlePageChange(currentPage()+1)} disabled={nextButton}>次 {">"}</button>
-                <button onClick={() => handlePageChange(maxPage())} disabled={lastButton}>{">>"}</button>
+                <button className={styles.pageButton} onClick={() => handlePageChange(currentPage-1)} disabled={preButton}>{"<"}</button>
+                <div className={styles.pageList}>
+                    {pageList().map((page, index) => (
+                        <Fragment key={index}>
+                            {(Number.isInteger(page) && page !== currentPage) ? (
+                                <button
+                                    className={styles.pageButton}
+                                    onClick={() => handlePageChange(page)}
+                                >
+                                    {page}
+                                </button>
+                            ) : (
+                                <span
+                                    className={styles.pageButton}
+                                    data-current={typeof page === 'number' ? true : undefined}
+                                >
+                                    {page}
+                                </span>
+                            )}
+                        </Fragment>
+                    ))}
+                </div>
+                <button className={styles.pageButton} onClick={() => handlePageChange(currentPage+1)} disabled={nextButton}>{">"}</button>
             </div>
-
+            <div className={styles.pageInputBox}>
+                <input
+                    type="number"
+                    value={inputPageValue}
+                    className={styles.pageInput}
+                    min={1}
+                    max={maxPage}
+                    onChange={(e) => setInputPageValue(Number(e.target.value))}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handlePageChange(e.target.value);
+                        }
+                    }}
+                />
+                <span> / {maxPage}</span>
+            </div>
         </main>
     )
 }

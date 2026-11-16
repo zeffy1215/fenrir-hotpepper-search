@@ -3,6 +3,10 @@ main {
     color: black;
 }
 
+button {
+    cursor: pointer;
+}
+
 /* ツールボックス */
 .resultToolbar {
     display: grid;
@@ -35,6 +39,7 @@ main {
 /* 店舗一覧 */
 .shopList {
     padding-left: 10px;
+    margin-bottom: 30px;
     border-bottom: solid 1px #ddd;
 }
 
@@ -64,6 +69,7 @@ main {
     padding-left: 5px;
     font-size: 24px;
     margin-bottom: 10px;
+    cursor: pointer;
 }
 
 .shopGenre {
@@ -127,4 +133,41 @@ main {
 
 .shopCloseDays, .shopCloseMark, .shopCloseHours {
     margin-top: 15px;
+}
+
+/* ページボタン */
+.pageBox {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+    width: 700px;
+    height: 45px;
+    margin: auto;
+}
+
+.pageButton {
+    margin: 0 5px;
+    border: none;
+    background: none;
+    font-size: 16px;
+}
+
+.pageList > span.pageButton {
+    cursor: default;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+}
+
+.pageButton[data-current="true"] {
+    margin: 0 8px!important;
+    padding: 1px;
+    width: 36px!important;
+    height: 26px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    border-radius: 15%;
+    background: #1565C0;
 }
