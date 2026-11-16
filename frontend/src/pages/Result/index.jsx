@@ -22,12 +22,12 @@ function Result() {
 
     const order = searchParams.get("order");
 
-    const free_drink = Number(searchParams.get("free_drink"));
-    const free_food = Number(searchParams.get("free_food"));
-    const card = Number(searchParams.get("card"));
-    const parking = Number(searchParams.get("parking"));
-    const lunch = Number(searchParams.get("lunch"));
-    const midnight = Number(searchParams.get("midnight"));
+    const free_drink = Number(searchParams.get("free_drink") ?? 0);
+    const free_food = Number(searchParams.get("free_food") ?? 0);
+    const card = Number(searchParams.get("card") ?? 0);
+    const parking = Number(searchParams.get("parking")?? 0);
+    const lunch = Number(searchParams.get("lunch")?? 0);
+    const midnight = Number(searchParams.get("midnight")?? 0);
 
     const [results, setResults] = useState({});
 
