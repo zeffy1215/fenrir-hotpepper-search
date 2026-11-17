@@ -1,5 +1,5 @@
 import { useState, useEffect, Fragment } from "react";
-import { useSearchParams, useNavigate, Link } from "react-router";
+import { useSearchParams, Link } from "react-router";
 import Select from 'react-select';
 import { searchShops } from "../../api/shops";
 import styles from "./Result.module.css";
@@ -47,7 +47,6 @@ function Result() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const navigate = useNavigate();
     const currentPage = Math.ceil(start / count);
 
     const [inputPageValue, setInputPageValue] = useState(String(currentPage));
