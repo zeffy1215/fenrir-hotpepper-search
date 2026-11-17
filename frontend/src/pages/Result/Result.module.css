@@ -10,32 +10,48 @@ button {
 /* ツールボックス */
 .resultToolbar {
     display: grid;
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 300px 1fr  100px 210px;
+    grid-template-rows: 40px 40px;
+    row-gap: 10px;
     align-items: center;
-    min-height: 40px;
+    min-height: 90px;
 }
 
 .resultCount {
-    text-align: left;
-    padding-left: 20%;
+    text-align: right;
+    grid-column: 1 / 2;
+    grid-row:  2 / 3;
 }
 
-.orderSelectBox {
+.orderLabel,
+.countLabel {
     display: flex;
     justify-content: end;
     align-items: center;
-    padding-right: 30px;
+    grid-column:  3 / 4;
 }
 
-.orderSelect {
-    min-width: 200px;
-    cursor: pointer!important;
+.orderSelect,
+.otherOrderSelect,
+.countSelect {
+    grid-column:  4 / 5;
+    margin-right: 40px;
+}
+
+.orderSelect,
+.otherOrderSelect {
+    grid-row: 1 / 2;
 }
 
 .otherOrderSelect {
-    text-align: right;
-    padding-right: 10%;
+    text-align: start;
+    margin-left: 21px;
 }
+
+.countSelect {
+    grid-row: 2 / 3;
+}
+
 
 /* 店舗一覧 */
 .shopList {

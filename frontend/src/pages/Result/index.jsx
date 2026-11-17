@@ -7,7 +7,20 @@ import styles from "./Result.module.css";
 const location_order_options = [
     { value: "1", label: "近い順" },
     { value: "4", label: "おすすめ順" },
-]
+];
+
+const search_count_options = [
+    { value: 10, label: "10件"},
+    { value: 30, label: "30件"},
+    { value: 50, label: "50件"},
+    { value: 100, label: "100件"},
+];
+
+const selectStyles = {
+    control: (base) => ({...base, cursor: "pointer", paddingLeft: "10px"}),
+    option: (base) => ({...base, cursor: "pointer"}),
+    singleValue: (base) => ({...base, textAlign: "start"}),
+};
 
 function Result() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -106,7 +119,15 @@ function Result() {
             s.set("start", 1);
             s.set("order", e.value);
             return s;
-        })
+        });
+    }
+
+    function handleCountChange(e) {
+        setSearchParams((s) => {
+            s.set("start", 1);
+            s.set("count", e.value);
+            return s;
+        });
     }
 
     function handlePageChange(value) {
@@ -154,26 +175,28 @@ function Result() {
             <h2>検索結果</h2>
                 <div className={styles.resultToolbar}>
                     <p className={styles.resultCount}>{results.start} ~ {results.start + results.count - 1} 件を表示 / 全 {results.available} 件</p>
-                    <>
-                        {type === "location" ? (
-                            <div className={styles.orderSelectBox}>
-                                <label htmlFor="orderSelect">表示順：</label>
-                                <Select 
-                                    id="orderSelect"
-                                    className={styles.orderSelect}
-                                    styles={{ 
-                                        control: (base) => ({...base, cursor: "pointer"}),
-                                        option: (base) => ({...base, cursor: "pointer"}),
-                                    }}
-                                    options={location_order_options}
-                                    value={location_order_options.find(e => e.value === order)}
-                                    onChange={handleOrderChange}
-                                ></Select>
-                            </div>
-                        ) : (
-                            <p className={styles.otherOrderSelect}>おすすめ順で表示中</p>
-                        )}
-                    </>
+                    <span className={styles.orderLabel}>表示順：</span>
+                    {type === "location" ? (
+                        <Select 
+                            className={styles.orderSelect}
+                            styles={selectStyles}
+                            options={location_order_options}
+                            value={location_order_options.find(e => e.value === order)}
+                            onChange={handleOrderChange}
+                            isSearchable={false}
+                        ></Select>
+                    ) : (
+                        <span className={styles.otherOrderSelect}>おすすめ順</span>
+                    )}
+                    <span className={styles.countLabel}>表示件数：</span>
+                    <Select
+                        className={styles.countSelect}
+                        styles={selectStyles}
+                        options={search_count_options}
+                        value={search_count_options.find(e => e.value === count)}
+                        onChange={handleCountChange}
+                        isSearchable={false}
+                    ></Select>
                 </div>
 
             <ul className={styles.shopList}>
