@@ -154,6 +154,11 @@ function Result() {
     if (loading) {
         return (
             <main>
+                <div className={styles.loading}>
+                    <svg viewBox="-60, -60, 120, 120">
+                        <circle r="50"/>
+                    </svg>
+                </div>
                 <p>検索中...</p>
             </main>
         );
