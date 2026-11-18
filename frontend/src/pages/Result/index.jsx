@@ -4,11 +4,13 @@ import Select from 'react-select';
 import { searchShops } from "../../api/shops";
 import styles from "./Result.module.css";
 
+// 表示順
 const location_order_options = [
     { value: "1", label: "近い順" },
     { value: "4", label: "おすすめ順" },
 ];
 
+// 表示件数
 const search_count_options = [
     { value: 10, label: "10件"},
     { value: 30, label: "30件"},
@@ -16,6 +18,7 @@ const search_count_options = [
     { value: 100, label: "100件"},
 ];
 
+// セレクトボックスのスタイル
 const selectStyles = {
     control: (base) => ({...base, cursor: "pointer", paddingLeft: "10px"}),
     option: (base) => ({...base, cursor: "pointer"}),
@@ -44,17 +47,23 @@ function Result() {
 
     const [results, setResults] = useState({});
 
+    // 初回取得終了フラグ
     const [loading, setLoading] = useState(true);
+
+    // 分割取得終了フラグ
     const [isFetchingMore, setIsFetchingMore] = useState(true);
+
     const [error, setError] = useState(null);
 
     const currentPage = Math.ceil(start / count);
 
     const [inputPageValue, setInputPageValue] = useState(String(currentPage));
 
+    // クエリパラメータの変更に伴うuseEffect
     useEffect (() => {
         let ignore = false;
 
+        // 分割取得数
         const getChunkSize = (total) => {
             if (total <= 10) return 10;
             if (total <= 30) return 15;
@@ -72,6 +81,10 @@ function Result() {
             for (let currentStart = start; currentStart < end; currentStart+= chunkSize) {
                 if (ignore) break;
 
+                // 最後の取得で残りの件数より多く取らないようにする
+                // 例：count = 100, chunkSize = 30
+                // 30 → 30 → 30 → 10 で取得する
+                // getChunkSizeを変更しても大丈夫なように
                 const fetchCount = Math.min(chunkSize, end - currentStart);
 
                 try {
@@ -95,6 +108,7 @@ function Result() {
                     const res = await searchShops(params);
                     if (ignore) break;
 
+                    // レスポンスを結合 (初回はコピー)
                     mergedResults = mergedResults === null
                         ? {...res}
                         : {
@@ -106,6 +120,7 @@ function Result() {
                     setResults(mergedResults);
                     setLoading(false);
 
+                    // 件数の都合上、これ以上取得するものがなくなったらbreak
                     if (res.available < currentStart + fetchCount) break;
                 } catch (err) {
                     console.error(err);
@@ -139,6 +154,7 @@ function Result() {
         return [1, 2, "...", currentPage-3, currentPage-2, currentPage-1, currentPage, currentPage+1, currentPage+2, currentPage+3, "...", maxPage-1, maxPage];
     };
     
+    // 表示順変更ハンドラー (1ページ目戻す)
     function handleOrderChange(e) {
         setSearchParams((s) => {
             s.set("start", 1);
@@ -147,6 +163,7 @@ function Result() {
         });
     }
 
+    // 表示件数変更ハンドラー (1ページ目戻す)
     function handleCountChange(e) {
         setSearchParams((s) => {
             s.set("start", 1);
@@ -155,15 +172,22 @@ function Result() {
         });
     }
 
+    // ページ変更ハンドラー
     function handlePageChange(value) {
         let page;
         page = Number(value);
+
+        // ページのinputに数値以外は入力された時
         if (!Number.isInteger(page)) {
             alert(`数値以外が入力されました。\n（半角数字で入力してください）`);
             setInputPageValue(String(currentPage));
             return;
         }
+
+        // ページのinputに現在のページが入力されても何もしない
         if (page === currentPage) return;
+
+        // ページのinputに入力された値が範囲外
         if (page < 1 || maxPage < page) {
             alert(`範囲外の数値が入力されました。\n（入力可能範囲：1〜${maxPage}）`);
             setInputPageValue(String(currentPage));
@@ -196,39 +220,45 @@ function Result() {
         )
     }
 
-    const maxPage = Math.ceil(results.available / count)
+    const maxPage = Math.ceil(results.available / count);
+
+    // ページの矢印ボタン(「<」「>」)のdisable用
     const preButton = !(currentPage > 1);
     const nextButton = !(currentPage < maxPage);
 
     return (
         <main>
             <h2>検索結果</h2>
-                <div className={styles.resultToolbar}>
-                    <p className={styles.resultCount}>{start} ~ {Math.min(start + count - 1, results.available)} 件を表示 / 全 {results.available} 件</p>
-                    <span className={styles.orderLabel}>表示順：</span>
-                    {type === "location" ? (
-                        <Select 
-                            className={styles.orderSelect}
-                            styles={selectStyles}
-                            options={location_order_options}
-                            value={location_order_options.find(e => e.value === order)}
-                            onChange={handleOrderChange}
-                            isSearchable={false}
-                        ></Select>
-                    ) : (
-                        <span className={styles.otherOrderSelect}>おすすめ順</span>
-                    )}
-                    <span className={styles.countLabel}>表示件数：</span>
-                    <Select
-                        className={styles.countSelect}
+
+            {/* ツールバー(表示形式) */}
+            <div className={styles.resultToolbar}>
+                <p className={styles.resultCount}>{start} ~ {Math.min(start + count - 1, results.available)} 件を表示 / 全 {results.available} 件</p>
+                <span className={styles.orderLabel}>表示順：</span>
+                {type === "location" ? (
+                    <Select 
+                        className={styles.orderSelect}
                         styles={selectStyles}
-                        options={search_count_options}
-                        value={search_count_options.find(e => e.value === count)}
-                        onChange={handleCountChange}
+                        options={location_order_options}
+                        value={location_order_options.find(e => e.value === order)}
+                        onChange={handleOrderChange}
                         isSearchable={false}
                     ></Select>
-                </div>
+                ) : (
+                    // 位置情報以外の検索の際は、おすすめ順で表示
+                    <span className={styles.otherOrderSelect}>おすすめ順</span>
+                )}
+                <span className={styles.countLabel}>表示件数：</span>
+                <Select
+                    className={styles.countSelect}
+                    styles={selectStyles}
+                    options={search_count_options}
+                    value={search_count_options.find(e => e.value === count)}
+                    onChange={handleCountChange}
+                    isSearchable={false}
+                ></Select>
+            </div>
 
+            {/* 店舗情報リスト */}
             <ul className={styles.shopList}>
                 {results.shops.map((shop) => (
                     <li key={shop.id} className={styles.shopGrid}>
@@ -272,6 +302,7 @@ function Result() {
                 ))}
             </ul>
             {isFetchingMore === true ? (
+                // 分割取得中 (初回取得は終了している)
                 <>
                     <div className={styles.loading}>
                         <svg viewBox="-60, -60, 120, 120">
@@ -284,6 +315,8 @@ function Result() {
             ) : (
                 <></>
             )}
+
+            {/* ページ遷移 */}
             <div className={styles.pageBox}>
                 <button className={styles.pageButton} onClick={() => handlePageChange(currentPage-1)} disabled={preButton}>{"<"}</button>
                 <div className={styles.pageList}>
