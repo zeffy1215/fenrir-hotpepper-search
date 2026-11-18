@@ -131,7 +131,7 @@ function Result() {
         }
         
         fetchShops();
-        setInputPageValue(currentPage);
+        setInputPageValue(String(currentPage));
 
         return () => {
             ignore = true;
