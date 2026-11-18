@@ -174,8 +174,7 @@ function Result() {
 
     // ページ変更ハンドラー
     function handlePageChange(value) {
-        let page;
-        page = Number(value);
+        const page = Number(value);
 
         // ページのinputに数値以外は入力された時
         if (!Number.isInteger(page)) {
