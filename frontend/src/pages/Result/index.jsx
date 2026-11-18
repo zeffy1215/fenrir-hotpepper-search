@@ -267,9 +267,9 @@ function Result() {
                         <div className={styles.info}>
                             <Link to={`/detail?id=${shop.id}`} className={styles.shopName}>{shop.name}</Link>
                             <p className={styles.shopGenre}>{shop.genre_name}
-                                {shop.sub_genre ? (
+                                {shop.sub_genre && (
                                     <> / {shop.sub_genre} </>
-                                ): (<></>)}
+                                )}
                                 <span className={styles.shopCatch}>| {shop.catch}</span>
                             </p>
 
@@ -300,7 +300,7 @@ function Result() {
                     </li>
                 ))}
             </ul>
-            {isFetchingMore === true ? (
+            {isFetchingMore === true && (
                 // 分割取得中 (初回取得は終了している)
                 <>
                     <div className={styles.loading}>
@@ -311,8 +311,6 @@ function Result() {
                     <p>{results.count} / {Math.min(count, results.available - start + 1)} 件を読み込みました</p>
                     <p>続きを読み込み中...</p>
                 </>
-            ) : (
-                <></>
             )}
 
             {/* ページ遷移 */}
