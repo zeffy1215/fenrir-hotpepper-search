@@ -87,15 +87,12 @@ function Result() {
         }
         
         fetchShops();
+        setInputPageValue(currentPage);
 
         return () => {
             ignore = true;
         };
     }, [searchParams]);
-
-    useEffect(() => {
-        setInputPageValue(currentPage);
-    }, [currentPage]);
 
     const pageList = () => {
         if (maxPage <= 14) {
