@@ -121,7 +121,7 @@ function Result() {
                     setLoading(false);
 
                     // 件数の都合上、これ以上取得するものがなくなったらbreak
-                    if (res.available < currentStart + fetchCount) break;
+                    if (res.available <= currentStart + fetchCount) break;
                 } catch (err) {
                     console.error(err);
                     break;
