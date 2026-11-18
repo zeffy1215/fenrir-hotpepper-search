@@ -293,7 +293,7 @@ function Result() {
                                     )}
                                     <span className={styles.shopCloseDays}>定休日</span>
                                     <span className={styles.shopCloseMark}>:</span>
-                                    <span className={styles.shopCloseHours}>{shop.close}</span>
+                                    <span className={styles.shopCloseHours}>{shop.close ? shop.close.replace(/定休[日]?[:：]?/, "") : "掲載なし"}</span>
                                 </div>
                             </div>
                         </div>
