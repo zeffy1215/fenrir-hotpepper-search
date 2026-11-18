@@ -30,7 +30,7 @@ function Result() {
     const lng = searchParams.get("lng");
     const range = searchParams.get("range");
 
-    const start = searchParams.get("start") ?? 1;
+    const start = Number(searchParams.get("start") ?? 1);
     const count = Number(searchParams.get("count") ?? 10);
 
     const order = searchParams.get("order");
@@ -45,6 +45,7 @@ function Result() {
     const [results, setResults] = useState({});
 
     const [loading, setLoading] = useState(true);
+    const [isFetchingMore, setIsFetchingMore] = useState(true);
     const [error, setError] = useState(null);
 
     const currentPage = Math.ceil(start / count);
@@ -54,36 +55,64 @@ function Result() {
     useEffect (() => {
         let ignore = false;
 
+        const getChunkSize = (total) => {
+            if (total <= 10) return 10;
+            if (total <= 30) return 15;
+            return 25;
+        };
+
         const fetchShops = async () => {
             setLoading(true);
-            try {
-                const obj = {
-                    "lat": lat,
-                    "lng": lng,
-                    "range": range,
-                    "start": start,
-                    "count": count,
-                    "order": order,
-                    "free_drink": free_drink,
-                    "free_food": free_food,
-                    "card": card,
-                    "parking": parking,
-                    "lunch": lunch,
-                    "midnight": midnight,
-                }
-                const params = Object.fromEntries(
-                    Object.entries(obj).filter(([k, v]) => v !== null)
-                );
-                const res = await searchShops(params);
-                if (!ignore) {
-                    setResults(res);
-                }
+            setIsFetchingMore(true);
 
-            } catch (err) {
-                console.error(err);
-            } finally {
-                if (!ignore) setLoading(false);
-            }
+            const end = start + count;
+            const chunkSize = getChunkSize(count);
+
+            let mergedResults = null;
+            for (let currentStart = start; currentStart < end; currentStart+= chunkSize) {
+                if (ignore) break;
+
+                const fetchCount = Math.min(chunkSize, end - currentStart);
+
+                try {
+                    const obj = {
+                        "lat": lat,
+                        "lng": lng,
+                        "range": range,
+                        "start": currentStart,
+                        "count": fetchCount,
+                        "order": order,
+                        "free_drink": free_drink,
+                        "free_food": free_food,
+                        "card": card,
+                        "parking": parking,
+                        "lunch": lunch,
+                        "midnight": midnight,
+                    }
+                    const params = Object.fromEntries(
+                        Object.entries(obj).filter(([k, v]) => v !== null)
+                    );
+                    const res = await searchShops(params);
+                    if (ignore) break;
+
+                    mergedResults = mergedResults === null
+                        ? {...res}
+                        : {
+                            ...mergedResults,
+                            count: mergedResults.count + res.count,
+                            shops: [...mergedResults.shops, ...res.shops],
+                        };
+                    
+                    setResults(mergedResults);
+                    setLoading(false);
+
+                    if (res.available < currentStart + fetchCount) break;
+                } catch (err) {
+                    console.error(err);
+                    break;
+                } 
+            } 
+            setIsFetchingMore(false);
         }
         
         fetchShops();
@@ -175,7 +204,7 @@ function Result() {
         <main>
             <h2>検索結果</h2>
                 <div className={styles.resultToolbar}>
-                    <p className={styles.resultCount}>{results.start} ~ {results.start + results.count - 1} 件を表示 / 全 {results.available} 件</p>
+                    <p className={styles.resultCount}>{start} ~ {Math.min(start + count - 1, results.available)} 件を表示 / 全 {results.available} 件</p>
                     <span className={styles.orderLabel}>表示順：</span>
                     {type === "location" ? (
                         <Select 
@@ -242,6 +271,19 @@ function Result() {
                     </li>
                 ))}
             </ul>
+            {isFetchingMore === true ? (
+                <>
+                    <div className={styles.loading}>
+                        <svg viewBox="-60, -60, 120, 120">
+                            <circle r="50"/>
+                        </svg>
+                    </div>
+                    <p>{results.count} / {Math.min(count, results.available - start + 1)} 件を読み込みました</p>
+                    <p>続きを読み込み中...</p>
+                </>
+            ) : (
+                <></>
+            )}
             <div className={styles.pageBox}>
                 <button className={styles.pageButton} onClick={() => handlePageChange(currentPage-1)} disabled={preButton}>{"<"}</button>
                 <div className={styles.pageList}>
