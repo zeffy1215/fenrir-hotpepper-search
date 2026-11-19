@@ -1,0 +1,51 @@
+
+/* ローディング
+    参考：https://blog.cloudsmith.co.jp/2024/04/494/
+*/
+
+.loading {
+    scale: 80%;
+}
+
+.loading > svg {
+    width: 120px;
+    height: 120px;
+}
+
+.loading > svg > circle {
+    fill: none;
+    stroke: red;
+    stroke-width: 20px;
+    stroke-dasharray: 236px;
+    stroke-dashoffset: -37px;
+
+    animation: wax-and-wane 2s cubic-bezier(.5, 0, .5, 1) infinite,
+        rotate 1.5s linear infinite;
+}
+
+@keyframes wax-and-wane {
+    0% {
+        stroke-dasharray: 236 78;
+        stroke-dashoffset: -37;
+    }
+
+    50% {
+        stroke-dasharray: 20 294;
+        stroke-dashoffset: -304;
+    }
+
+    100% {
+        stroke-dasharray: 236 78;
+        stroke-dashoffset: -351;
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
