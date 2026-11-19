@@ -1,10 +1,11 @@
 import re
 import requests
 from requests.exceptions import Timeout
-from exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperGatewayError ,HotpepperApiKeyError, HotpepperBadRequestError, HotpepperError
+from exceptions.hotpepper_exception import (HotpepperTimeoutError, HotpepperGatewayError ,
+    HotpepperApiKeyError, HotpepperBadRequestError, HotpepperNotFoundError, HotpepperMultipleResultsError, HotpepperError)
 from dataclasses import asdict
 from dto.shop_search_params import ShopSearchByLocationParamsDto
-from dto.shop_search_response import ShopPhoto, ShopOpen, ShopInfo, ShopListResponse
+from dto.shop_search_response import ShopPhoto, ShopOpen, ShopInfo, ShopListResponse, ShopDetailResponse
 from config import Config
 
 # codeが取りうる範囲(ホットペッパーのreference.htmlの13を参照)
@@ -52,6 +53,14 @@ def shop_info_fields(shop: dict) -> dict:
 # type=liteを指定したときに取得されないものと入れ子のものは、getで取得
 def to_shop_info(shop: dict) -> ShopInfo:
     return ShopInfo(**shop_info_fields(shop))
+
+
+def to_shop_detail(shop: dict) -> ShopDetailResponse:
+    return ShopDetailResponse(
+        **shop_info_fields(shop),
+        area=shop.get("middle_area", {}).get("name")
+    )
+
 
 def request_hotpepper(params: dict) -> dict:
     params = {k: v for k, v in params.items() if v is not None}
@@ -101,3 +110,19 @@ def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
     )
             
     return response
+
+def get_detail(params: dict) -> ShopDetailResponse:
+    results = request_hotpepper(params)
+
+    try:
+        if int(results["results_returned"]) == 0:
+            raise HotpepperNotFoundError("店舗情報が見つかりません")
+        elif int(results["results_returned"]) >= 2:
+            raise HotpepperMultipleResultsError("店舗情報が2件以上見つかりました。")
+
+        shop = results["shop"][0]
+    except (KeyError, ValueError) as e:
+        raise HotpepperError("ホットペッパーAPI呼び出し中に不明なエラーが発生しました") from e
+
+    return to_shop_detail(shop)
+    
