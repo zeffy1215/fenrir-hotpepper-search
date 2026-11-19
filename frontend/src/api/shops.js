@@ -12,3 +12,15 @@ export const searchShops = async (obj) => {
 
     return await res.json();
 }
+
+export const detailShop = async (id) => {
+    const res = await fetch(`${API_BASE}/${id}`);
+
+    if (!res.ok) {
+        const body = await res.json().catch(() => {});
+        const message = body.error ?? '不明なエラーが発生しました'
+        throw Error(`ステータスコード: ${res.status}, メッセージ: ${message}`);
+    }
+
+    return await res.json();
+}

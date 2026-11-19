@@ -16,3 +16,11 @@ class HotpepperApiKeyError(HotpepperError):
 # パラメーター不正 (code=3000)
 class HotpepperBadRequestError(HotpepperError):
     pass
+
+# 詳細取得（ID指定）時にヒットするものがなかった
+class HotpepperNotFoundError(HotpepperError):
+    pass
+
+# 詳細取得（ID指定）をしているのに2件以上にヒットした
+class HotpepperMultipleResultsError(HotpepperError):
+    pass

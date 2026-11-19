@@ -1,10 +1,11 @@
 import re
 import requests
 from requests.exceptions import Timeout
-from exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperGatewayError ,HotpepperApiKeyError, HotpepperBadRequestError, HotpepperError
+from exceptions.hotpepper_exception import (HotpepperTimeoutError, HotpepperGatewayError ,
+    HotpepperApiKeyError, HotpepperBadRequestError, HotpepperNotFoundError, HotpepperMultipleResultsError, HotpepperError)
 from dataclasses import asdict
 from dto.shop_search_params import ShopSearchByLocationParamsDto
-from dto.shop_search_response import ShopPhoto, ShopOpen, ShopInfo, ShopListResponse
+from dto.shop_search_response import ShopPhoto, ShopOpen, ShopInfo, ShopListResponse, ShopDetailResponse
 from config import Config
 
 # codeが取りうる範囲(ホットペッパーのreference.htmlの13を参照)
@@ -12,39 +13,60 @@ HOTPEPPER_ERROR_SERVER = 1000      # サーバー障害エラー
 HOTPEPPER_ERROR_AUTH = 2000        # APIキーまたはIPアドレスの認証エラー
 HOTPEPPER_ERROR_PARAMETER = 3000   # パラメータ不正エラー
 
-# 曜日：
+# 営業時間を(曜日：時間)の形に整形
 def format_open(text):
+    if not text:
+        return None
+
     matches = re.findall(r"([月火水木金土日祝前、～]+):([^月火水木金土日祝前、]+)", text)
     if matches:
         return [ShopOpen(days=day, hours=hour) for (day, hour) in matches]
     return text
 
-# type=liteを指定したときに取得されないものと入れ子のものは、getで取得
-def to_shop_info(shop: dict) -> ShopInfo:
-    return ShopInfo(
-        id=shop["id"],
-        name=shop["name"],
-        name_kana=shop.get("name_kana"),
-
-        address=shop["address"],
-        access=shop["access"],
-
-        genre_name=shop.get("genre", {}).get("name"),
-        sub_genre=shop.get("sub_genre", {}).get("name"),
-
-        catch=shop["catch"],
-        open=format_open((shop.get("open"))),
-        close=shop.get("close"),
-
-        photo=ShopPhoto(
-            large=shop.get("photo", {}).get("pc", {}).get("l"),
-            medium=shop.get("photo", {}).get("pc", {}).get("m"),
-            small=shop.get("photo", {}).get("pc", {}).get("s")
-        )
+# 店舗写真URLを整形
+def to_shop_photo(shop: dict) -> ShopPhoto:
+    photo = shop.get("photo", {}).get("pc", {})
+    return ShopPhoto(
+        large=photo.get("l"),
+        medium=photo.get("m"),
+        small=photo.get("s")
     )
 
-def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
-    params = {k: v for k, v in asdict(params).items() if v is not None}
+# type=liteを指定したときに取得されないものと入れ子のものは、getで取得
+# 店舗一覧と店舗詳細で共通して取り出す部分を辞書で返す
+def shop_info_fields(shop: dict) -> dict:
+    return {
+        "id": shop["id"],
+        "name": shop["name"],
+        "name_kana": shop.get("name_kana"),
+
+        "address": shop["address"],
+        "access": shop["access"],
+
+        "genre_name": shop.get("genre", {}).get("name"),
+        "sub_genre": shop.get("sub_genre", {}).get("name"),
+
+        "catch": shop["catch"],
+        "open": format_open((shop.get("open"))),
+        "close": shop.get("close"),
+
+        "photo": to_shop_photo(shop)
+    }
+
+# 店舗一覧検索用のレスポンスを整形
+def to_shop_info(shop: dict) -> ShopInfo:
+    return ShopInfo(**shop_info_fields(shop))
+
+# 店舗詳細用のレスポンスを整形
+def to_shop_detail(shop: dict) -> ShopDetailResponse:
+    return ShopDetailResponse(
+        **shop_info_fields(shop),
+        area=shop.get("middle_area", {}).get("name")
+    )
+
+# ホットペッパーAPIを叩く処理（ホットペッパーのエラー時はraiseする)
+def request_hotpepper(params: dict) -> dict:
+    params = {k: v for k, v in params.items() if v is not None}
     params["key"] = Config.API_KEY
     params["format"] = "json"
 
@@ -75,7 +97,11 @@ def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
         else:
             raise HotpepperError(f"ホットペッパーAPI呼び出し中に不明なエラーが発生しました (code={str(code)})")
 
-    
+    return results
+
+# 店舗一覧検索
+def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
+    results = request_hotpepper(asdict(params))
     shop_list = results["shop"]
 
     shops = [to_shop_info(shop) for shop in shop_list]
@@ -88,3 +114,20 @@ def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
     )
             
     return response
+
+# 店舗詳細検索（ID指定）
+def get_detail(params: dict) -> ShopDetailResponse:
+    results = request_hotpepper(params)
+
+    try:
+        if int(results["results_returned"]) == 0:
+            raise HotpepperNotFoundError("店舗情報が見つかりません")
+        elif int(results["results_returned"]) >= 2:
+            raise HotpepperMultipleResultsError("店舗情報が2件以上見つかりました。")
+
+        shop = results["shop"][0]
+    except (KeyError, ValueError) as e:
+        raise HotpepperError("ホットペッパーAPI呼び出し中に不明なエラーが発生しました") from e
+
+    return to_shop_detail(shop)
+    

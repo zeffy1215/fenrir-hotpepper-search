@@ -21,24 +21,24 @@ class ShopOpen:
 検索結果の一覧に表示する、店舗1件分の情報
 ホットペッパーAPIの店舗情報のうち、一覧画面で必要な項目だけを持つ。
 """
-@dataclass
+@dataclass(kw_only=True)
 class ShopInfo:
-    id: str                     # 店舗ID
-    name: str                   # 掲載店名
-    name_kana: str              # 掲載店名(かな)
+    id: str                              # 店舗ID
+    name: str                            # 掲載店名
+    name_kana: str                       # 掲載店名(かな)
     
-    address: str                # 住所
-    access: str                 # お店アクセス
+    address: str                         # 住所
+    access: str                          # お店アクセス
 
     genre_name: str             # お店のジャンル(name)
-    sub_genre: str              # お店のサブジャンル
+    sub_genre: str | None                # お店のサブジャンル
 
-    catch: str                  # お店キャッチ
+    catch: str                           # お店キャッチ
 
-    open: list[ShopOpen] | str  # 営業時間
-    close: str                  # 定休日
+    open: list[ShopOpen] | str | None    # 営業時間
+    close: str | None                    # 定休日
 
-    photo: ShopPhoto            # 店舗トップ写真
+    photo: ShopPhoto                     # 店舗トップ写真
 
 
 """
@@ -47,8 +47,12 @@ class ShopInfo:
 """
 @dataclass
 class ShopListResponse:
-    available: int              # 検索結果の全件数
-    count: int                  # レスポンスに含まれる検索結果の件数
-    start: int                  # 検索結果の開始位置
+    available: int                       # 検索結果の全件数
+    count: int                           # レスポンスに含まれる検索結果の件数
+    start: int                           # 検索結果の開始位置
 
-    shops: list[ShopInfo]       # 店舗情報
+    shops: list[ShopInfo]                # 店舗情報
+
+@dataclass(kw_only=True)
+class ShopDetailResponse(ShopInfo):
+    area: str                            # 店舗エリア

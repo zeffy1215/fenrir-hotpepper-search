@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
-from exceptions.hotpepper_exception import HotpepperTimeoutError, HotpepperError
+from exceptions.hotpepper_exception import (HotpepperTimeoutError, HotpepperNotFoundError, HotpepperError)
+
 from exceptions.validation_exception import ValidationError
 from services import shop_service
 from dto.shop_search_params import ShopSearchByLocationParamsDto
@@ -52,6 +53,24 @@ def search():
         res = shop_service.search(params)
     except HotpepperTimeoutError as e: 
         return jsonify({"error": str(e)}), 504 # Gateway Timeout
+    except HotpepperError as e:
+        print(str(e)) # TODO: print→ログファイル::残す際は開発者にわかりやすいよう
+        return jsonify({"error": "サーバーエラーが発生しました"}), 502 # Bad Gateway
+    
+    return jsonify(res), 200
+
+@shop_bp.route('/<id>')
+def get_shop_by_id(id):
+    params = {
+        "id": id
+    }
+
+    try:
+        res = shop_service.get_detail(params)
+    except HotpepperTimeoutError as e: 
+        return jsonify({"error": str(e)}), 504 # Gateway Timeout
+    except HotpepperNotFoundError as e:
+        return jsonify({"error": str(e)}), 404 # NotFound
     except HotpepperError as e:
         print(str(e)) # TODO: print→ログファイル::残す際は開発者にわかりやすいよう
         return jsonify({"error": "サーバーエラーが発生しました"}), 502 # Bad Gateway
