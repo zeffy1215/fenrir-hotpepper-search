@@ -13,16 +13,17 @@ HOTPEPPER_ERROR_SERVER = 1000      # サーバー障害エラー
 HOTPEPPER_ERROR_AUTH = 2000        # APIキーまたはIPアドレスの認証エラー
 HOTPEPPER_ERROR_PARAMETER = 3000   # パラメータ不正エラー
 
-# 曜日：
+# 営業時間を(曜日：時間)の形に整形
 def format_open(text):
     if not text:
         return None
-    
+
     matches = re.findall(r"([月火水木金土日祝前、～]+):([^月火水木金土日祝前、]+)", text)
     if matches:
         return [ShopOpen(days=day, hours=hour) for (day, hour) in matches]
     return text
 
+# 店舗写真URLを整形
 def to_shop_photo(shop: dict) -> ShopPhoto:
     photo = shop.get("photo", {}).get("pc", {})
     return ShopPhoto(
@@ -31,6 +32,8 @@ def to_shop_photo(shop: dict) -> ShopPhoto:
         small=photo.get("s")
     )
 
+# type=liteを指定したときに取得されないものと入れ子のものは、getで取得
+# 店舗一覧と店舗詳細で共通して取り出す部分を辞書で返す
 def shop_info_fields(shop: dict) -> dict:
     return {
         "id": shop["id"],
@@ -50,18 +53,18 @@ def shop_info_fields(shop: dict) -> dict:
         "photo": to_shop_photo(shop)
     }
 
-# type=liteを指定したときに取得されないものと入れ子のものは、getで取得
+# 店舗一覧検索用のレスポンスを整形
 def to_shop_info(shop: dict) -> ShopInfo:
     return ShopInfo(**shop_info_fields(shop))
 
-
+# 店舗詳細用のレスポンスを整形
 def to_shop_detail(shop: dict) -> ShopDetailResponse:
     return ShopDetailResponse(
         **shop_info_fields(shop),
         area=shop.get("middle_area", {}).get("name")
     )
 
-
+# ホットペッパーAPIを叩く処理（ホットペッパーのエラー時はraiseする)
 def request_hotpepper(params: dict) -> dict:
     params = {k: v for k, v in params.items() if v is not None}
     params["key"] = Config.API_KEY
@@ -96,6 +99,7 @@ def request_hotpepper(params: dict) -> dict:
 
     return results
 
+# 店舗一覧検索
 def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
     results = request_hotpepper(asdict(params))
     shop_list = results["shop"]
@@ -111,6 +115,7 @@ def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
             
     return response
 
+# 店舗詳細検索（ID指定）
 def get_detail(params: dict) -> ShopDetailResponse:
     results = request_hotpepper(params)
 
