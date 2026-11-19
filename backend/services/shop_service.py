@@ -22,32 +22,39 @@ def format_open(text):
         return [ShopOpen(days=day, hours=hour) for (day, hour) in matches]
     return text
 
-# type=liteを指定したときに取得されないものと入れ子のものは、getで取得
-def to_shop_info(shop: dict) -> ShopInfo:
-    return ShopInfo(
-        id=shop["id"],
-        name=shop["name"],
-        name_kana=shop.get("name_kana"),
-
-        address=shop["address"],
-        access=shop["access"],
-
-        genre_name=shop.get("genre", {}).get("name"),
-        sub_genre=shop.get("sub_genre", {}).get("name"),
-
-        catch=shop["catch"],
-        open=format_open((shop.get("open"))),
-        close=shop.get("close"),
-
-        photo=ShopPhoto(
-            large=shop.get("photo", {}).get("pc", {}).get("l"),
-            medium=shop.get("photo", {}).get("pc", {}).get("m"),
-            small=shop.get("photo", {}).get("pc", {}).get("s")
-        )
+def to_shop_photo(shop: dict) -> ShopPhoto:
+    photo = shop.get("photo", {}).get("pc", {})
+    return ShopPhoto(
+        large=photo.get("l"),
+        medium=photo.get("m"),
+        small=photo.get("s")
     )
 
-def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
-    params = {k: v for k, v in asdict(params).items() if v is not None}
+def shop_info_fields(shop: dict) -> dict:
+    return {
+        "id": shop["id"],
+        "name": shop["name"],
+        "name_kana": shop.get("name_kana"),
+
+        "address": shop["address"],
+        "access": shop["access"],
+
+        "genre_name": shop.get("genre", {}).get("name"),
+        "sub_genre": shop.get("sub_genre", {}).get("name"),
+
+        "catch": shop["catch"],
+        "open": format_open((shop.get("open"))),
+        "close": shop.get("close"),
+
+        "photo": to_shop_photo(shop)
+    }
+
+# type=liteを指定したときに取得されないものと入れ子のものは、getで取得
+def to_shop_info(shop: dict) -> ShopInfo:
+    return ShopInfo(**shop_info_fields(shop))
+
+def request_hotpepper(params: dict) -> dict:
+    params = {k: v for k, v in params.items() if v is not None}
     params["key"] = Config.API_KEY
     params["format"] = "json"
 
@@ -78,7 +85,10 @@ def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
         else:
             raise HotpepperError(f"ホットペッパーAPI呼び出し中に不明なエラーが発生しました (code={str(code)})")
 
-    
+    return results
+
+def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
+    results = request_hotpepper(asdict(params))
     shop_list = results["shop"]
 
     shops = [to_shop_info(shop) for shop in shop_list]
