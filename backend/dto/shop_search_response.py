@@ -31,12 +31,12 @@ class ShopInfo:
     access: str                 # お店アクセス
 
     genre_name: str             # お店のジャンル(name)
-    sub_genre: str              # お店のサブジャンル
+    sub_genre: str | None                # お店のサブジャンル
 
     catch: str                  # お店キャッチ
 
-    open: list[ShopOpen] | str  # 営業時間
-    close: str                  # 定休日
+    open: list[ShopOpen] | str | None    # 営業時間
+    close: str | None                    # 定休日
 
     photo: ShopPhoto            # 店舗トップ写真
 

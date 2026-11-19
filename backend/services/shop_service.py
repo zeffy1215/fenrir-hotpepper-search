@@ -14,6 +14,9 @@ HOTPEPPER_ERROR_PARAMETER = 3000   # パラメータ不正エラー
 
 # 曜日：
 def format_open(text):
+    if not text:
+        return None
+    
     matches = re.findall(r"([月火水木金土日祝前、～]+):([^月火水木金土日祝前、]+)", text)
     if matches:
         return [ShopOpen(days=day, hours=hour) for (day, hour) in matches]
