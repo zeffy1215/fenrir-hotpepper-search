@@ -55,4 +55,27 @@ class ShopListResponse:
 
 @dataclass(kw_only=True)
 class ShopDetailResponse(ShopInfo):
-    area: str                            # 店舗エリア
+    area: str | None                     # 店舗エリア
+
+    lat: float | None                    # 店舗緯度
+    lng: float | None                    # 店舗経度
+
+    budget: str | None                   # ディナー予算
+    capacity: int | None                 # 総席数
+    url: str | None                      # 店舗URL
+    station: str | None                  # 最寄駅
+
+    wedding: bool | str | None           # ウェディング･二次会
+    course: bool | str | None            # コース
+    free_drink: bool | str | None        # 飲み放題
+    free_food: bool | str | None         # 食べ放題
+    private_room: bool | str | None      # 個室
+    tatami: bool | str | None            # 座敷	
+    card: bool | str | None              # カード可
+    non_smoking: bool | str | None       # 禁煙席
+    charter: bool | str | None           # 貸切可
+    parking: bool | str | None           # 駐車場
+    barrier_free: bool | str | None      # バリアフリー
+    pet: bool | str | None               # ペット可
+    child: bool | str | None             # お子様連れ
+    lunch: bool | str | None             # ランチ

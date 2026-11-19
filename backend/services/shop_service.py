@@ -23,6 +23,20 @@ def format_open(text):
         return [ShopOpen(days=day, hours=hour) for (day, hour) in matches]
     return text
 
+# あり、なし をboolに変更
+def to_availability(text):
+    if not text:
+        return None
+
+    if re.search(r"不|なし|ません", text):
+        return False
+
+    if re.search(r"可|あり", text):
+        return True
+
+    return text
+
+
 # 店舗写真URLを整形
 def to_shop_photo(shop: dict) -> ShopPhoto:
     photo = shop.get("photo", {}).get("pc", {})
@@ -61,7 +75,30 @@ def to_shop_info(shop: dict) -> ShopInfo:
 def to_shop_detail(shop: dict) -> ShopDetailResponse:
     return ShopDetailResponse(
         **shop_info_fields(shop),
-        area=shop.get("middle_area", {}).get("name")
+        area=shop.get("middle_area", {}).get("name"),
+
+        lat=shop["lat"],
+        lng=shop["lng"],
+
+        budget=shop.get("budget", {}).get("average") if shop.get("budget", {}).get("average") else shop.get("budget", {}).get("name"),
+        capacity=shop.get("capacity"),
+        url=shop.get("urls", {}).get("pc"),
+        station=shop.get("station_name"),
+
+        wedding=to_availability(shop.get("wedding")),
+        course=to_availability(shop.get("course")),
+        free_drink=to_availability(shop.get("free_drink")),
+        free_food=to_availability(shop.get("free_food")),
+        private_room=to_availability(shop.get("private_room")),
+        tatami=to_availability(shop.get("tatami")),
+        card=shop.get("card"),
+        non_smoking=shop.get("non_smoking"),
+        charter=to_availability(shop.get("charter")),
+        parking=to_availability(shop.get("parking")),
+        barrier_free=to_availability(shop.get("barrier_free")),
+        pet=to_availability(shop.get("pet")),
+        child=to_availability(shop.get("child")),
+        lunch=to_availability(shop.get("lunch"))
     )
 
 # ホットペッパーAPIを叩く処理（ホットペッパーのエラー時はraiseする)
@@ -118,6 +155,7 @@ def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
 # 店舗詳細検索（ID指定）
 def get_detail(params: dict) -> ShopDetailResponse:
     results = request_hotpepper(params)
+
 
     try:
         if int(results["results_returned"]) == 0:
