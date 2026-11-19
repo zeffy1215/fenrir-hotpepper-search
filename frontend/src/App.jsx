@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 
 import Search from "./pages/Search";
-import Result from "./pages/Result"
+import Result from "./pages/Result";
 
 function App() {
     return (
