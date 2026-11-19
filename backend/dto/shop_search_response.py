@@ -5,17 +5,17 @@ from dataclasses import dataclass
 """
 @dataclass
 class ShopPhoto:
-    large: str                  # 店舗トップ写真(大) 
-    medium: str                 # 店舗トップ写真(中)
-    small: str                  # 店舗トップ写真(小)
+    large: str                           # 店舗トップ写真(大) 
+    medium: str                          # 店舗トップ写真(中)
+    small: str                           # 店舗トップ写真(小)
 
 """
 お店の営業時間を曜日ごとに分けたもの
 """
 @dataclass
 class ShopOpen:
-    days: str                   # 曜日
-    hours: str                  # 営業時間
+    days: str                            # 曜日
+    hours: str                           # 営業時間
 
 """
 検索結果の一覧に表示する、店舗1件分の情報
@@ -30,7 +30,7 @@ class ShopInfo:
     address: str                         # 住所
     access: str                          # お店アクセス
 
-    genre_name: str             # お店のジャンル(name)
+    genre_name: str                      # お店のジャンル(name)
     sub_genre: str | None                # お店のサブジャンル
 
     catch: str                           # お店キャッチ
