@@ -52,3 +52,7 @@ class ShopListResponse:
     start: int                  # 検索結果の開始位置
 
     shops: list[ShopInfo]       # 店舗情報
+
+@dataclass(kw_only=True)
+class ShopDetailResponse(ShopInfo):
+    area: str                            # 店舗エリア
