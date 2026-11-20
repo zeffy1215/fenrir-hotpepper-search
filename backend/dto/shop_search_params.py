@@ -33,9 +33,9 @@ class ShopSearchByLocationParamsDto:
     midnight: int | None = None             # 23時以降の営業(0,1)
 
     def __post_init__(self):
-        self.lat = validate_number(self.lat, name="緯度", converter=float, min_value=-90.0, max_value=90.0)
-        self.lng = validate_number(self.lng, name="経度", converter=float, min_value=-180.0, max_value=180.0)
-        self.range = validate_number(self.range, name="検索範囲", converter=int, min_value=1, max_value=5)
+        self.lat = validate_number(self.lat, name="緯度", converter=float, min_value=-90.0, max_value=90.0, required=False)
+        self.lng = validate_number(self.lng, name="経度", converter=float, min_value=-180.0, max_value=180.0, required=False)
+        self.range = validate_number(self.range, name="検索範囲", converter=int, min_value=1, max_value=5, required=False)
 
         self.start = validate_number(self.start, name="検索の開始位置", converter=int, min_value=1)
         self.count = validate_number(self.count, name="1ページあたりの取得数", converter=int, min_value=1, max_value=100)
