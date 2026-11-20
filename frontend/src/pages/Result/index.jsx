@@ -266,10 +266,8 @@ function Result() {
                         </div>
                         <div className={styles.info}>
                             <Link to={`/detail?id=${shop.id}`} className={styles.shopName}>{shop.name}</Link>
-                            <p className={styles.shopGenre}>{shop.genre_name}
-                                {shop.sub_genre && (
-                                    <> / {shop.sub_genre} </>
-                                )}
+                            <p className={styles.shopGenre}>
+                                {shop.genre.map((genre) => genre.name).join(" / ")}
                                 <span className={styles.shopCatch}>| {shop.catch}</span>
                             </p>
 
