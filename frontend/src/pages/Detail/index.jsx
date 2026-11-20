@@ -8,7 +8,7 @@ const formatRaw = (value) => {
     return value;
 }
 
-// 
+// バックエンドで整えたものを見やすいようにフォーマット
 const formatAvailability = (value) => {
     if (value === null) return "掲載なし";
     else if (value === true) return "あり";
