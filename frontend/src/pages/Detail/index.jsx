@@ -1,5 +1,5 @@
 import { useState, useEffect, Fragment } from "react";
-import { useSearchParams } from "react-router";
+import { useSearchParams, Link } from "react-router";
 import { detailShop } from "../../api/shops";
 import styles from "./Detail.module.css";
 
@@ -15,6 +15,16 @@ const formatAvailability = (value) => {
     else if (value === false) return "なし";
 
     return value;
+}
+
+const createAreaSearchQuery = (area, genre) => {
+    return new URLSearchParams({
+        "area": area,
+        "genre": genre,
+        "start": 1,
+        "count": 10,
+        "order": 4,
+    });
 }
 
 // 設備・サービステーブルの項目リスト
@@ -111,10 +121,13 @@ function Detail() {
                         {results.area && (
                             <div className={styles.searchLinks}>
                                 {results.genre.map((genre, index) => (
-                                    // TODO: リンクに変更する
-                                    <span key={index} className={styles.searchLink}>
+                                    <Link
+                                        key={index}
+                                        to={`/result?${createAreaSearchQuery(results.area.code, genre.code)}`}
+                                        className={styles.searchLink}
+                                    >
                                         {results.area.name} × {genre.name} で探す →
-                                    </span>
+                                    </Link>
                                 ))}
                             </div>
                         )}
