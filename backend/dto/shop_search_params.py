@@ -16,12 +16,15 @@ class ShopSearchByLocationParamsDto:
     lng: float | None = None                # 経度(-180°~180°)
     range: int | None = None                # 検索範囲(1,2,3,4,5)
 
+    middle_area: str | None = None          # エリア(中エリアを使用)
+
     start: int = 1                          # 検索の開始位置(1~)
     count: int = 10                         # １ページの掲載件数(1~100)
 
     order: int = 4                          # ソート順(1,2,3,4)
 
     # 任意パラメータ
+    genre: str | None = None                # ジャンル
     free_drink: int | None = None           # 飲み放題(0,1)
     free_food: int | None = None            # 食べ放題(0,1)
     card: int | None = None                 # カード決済(0,1)
