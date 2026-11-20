@@ -60,14 +60,14 @@ function Detail() {
                 <caption>店舗基本情報</caption>
                 <tbody>
                     <tr>
-                        <td>店名</td>
+                        <th scope="row">店名</th>
                         <td>
                             <p>{results.name}</p>
                             <p className={styles.kana}>({results.name_kana})</p>
                         </td>
                     </tr>
                     <tr>
-                        <td>ジャンル</td>
+                        <th scope="row">ジャンル</th>
                         {results.sub_genre ? (
                             <td>{results.genre_name} / {results.sub_genre}</td>
                         ) : (
@@ -75,7 +75,7 @@ function Detail() {
                         )}
                     </tr>
                     <tr>
-                        <td>住所</td>
+                        <th scope="row">住所</th>
                         <td>
                             <p className={styles.address}>{results.address}</p>
                             <iframe
@@ -89,11 +89,11 @@ function Detail() {
                         </td>
                     </tr>
                     <tr>
-                        <td>アクセス</td>
+                        <th scope="row">アクセス</th>
                         <td>{results.access}</td>
                     </tr>
                     <tr>
-                        <td>営業時間</td>
+                        <th scope="row">営業時間</th>
                         <td>
                             {Array.isArray(results.open) ? (
                                 <>
@@ -110,11 +110,11 @@ function Detail() {
                         </td>
                     </tr>
                     <tr>
-                        <td>定休日</td>
+                        <th scope="row">定休日</th>
                         <td>{results.close ? results.close.replace(/定休[日]?[:：]?/, "") : "掲載なし"}</td>
                     </tr>
                     <tr>
-                        <td>ディナー予算</td>
+                        <th scope="row">ディナー予算</th>
                         <td>{results.budget}</td>
                     </tr>
                 </tbody>
