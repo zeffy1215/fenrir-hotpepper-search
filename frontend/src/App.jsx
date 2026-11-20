@@ -4,6 +4,8 @@ import Search from "./pages/Search";
 import Result from "./pages/Result";
 import Detail from "./pages/Detail";
 
+import Footer from "./components/Footer";
+
 function App() {
     return (
         <BrowserRouter>
@@ -14,6 +16,8 @@ function App() {
                 <Route path="/result" element={<Result />} />
                 <Route path="/detail" element={<Detail />} />
             </Routes>
+
+            <Footer />
         </BrowserRouter>
     )
 }
