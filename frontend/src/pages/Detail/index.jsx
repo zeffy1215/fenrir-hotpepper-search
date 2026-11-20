@@ -162,7 +162,7 @@ function Detail() {
                 </tbody>
             </table>
 
-                <table>
+                <table className={styles.shopInfoTable}>
                     <caption>【設備・サービス】</caption>
                     <tbody>
                         {SHOP_FEATURE_ITEMS.map((item) => (
