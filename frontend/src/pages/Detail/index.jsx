@@ -117,21 +117,6 @@ function Detail() {
                     <caption>【基本情報】</caption>
                 <tbody>
                     <tr>
-                        <th scope="row">店名</th>
-                        <td>
-                            <p>{results.name}</p>
-                            <p className={styles.kana}>({results.name_kana})</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">ジャンル</th>
-                        {results.sub_genre ? (
-                            <td>{results.genre_name} / {results.sub_genre}</td>
-                        ) : (
-                            <td>{results.genre_name}</td>
-                        )}
-                    </tr>
-                    <tr>
                         <th scope="row">住所</th>
                         <td>
                             <p className={styles.address}>{results.address}</p>
