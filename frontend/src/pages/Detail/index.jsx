@@ -86,7 +86,7 @@ function Detail() {
             <p>{results.name}</p>
 
             <table className={styles.basicInfoTable}>
-                <caption>店舗基本情報</caption>
+                    <caption>【基本情報】</caption>
                 <tbody>
                     <tr>
                         <th scope="row">店名</th>
