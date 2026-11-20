@@ -83,9 +83,37 @@ function Detail() {
 
     return (
         <main>
-            <p>{results.name}</p>
+            <article>
+                <header className={styles.shopHeader}>
+                    <img className={styles.shopPhoto} src={results.photo.large}></img>
+                    <div className={styles.shopNameBox}>
+                        <h1 className={styles.shopName}>{results.name}</h1>
+                        <p className={styles.shopKana}>{results.name_kana}</p>
+                    </div>
+                    <div className={styles.shopInfo}>
+                        <p className={styles.shopCatch}>{results.catch}</p>
+                        <div className={styles.shopGenreList}>
+                            {results.genre.map((genre) => (
+                                <span key={genre.code} className={styles.shopGenre}>{genre.name}</span>
+                            ))}
+                        </div>
 
-            <table className={styles.basicInfoTable}>
+                        <p className={styles.shopArea}>エリア：{results.area ? results.area.name : "掲載なし"}</p>
+                        <p className={styles.shopStation}>最寄駅：{results.station ? results.station : "掲載なし"}</p>
+
+                        {results.area && (
+                            <div className={styles.searchLinks}>
+                                {results.genre.map((genre, index) => (
+                                    <span key={index} className={styles.searchLink}>
+                                        {results.area.name} × {genre.name} で探す →
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </header>
+
+                <table className={styles.shopInfoTable}>
                     <caption>【基本情報】</caption>
                 <tbody>
                     <tr>
