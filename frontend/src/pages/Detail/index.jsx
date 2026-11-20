@@ -3,9 +3,12 @@ import { useSearchParams } from "react-router";
 import { detailShop } from "../../api/shops";
 import styles from "./Detail.module.css";
 
+// 何もしない
 const formatRaw = (value) => {
     return value;
 }
+
+// 
 const formatAvailability = (value) => {
     if (value === null) return "掲載なし";
     else if (value === true) return "あり";
@@ -14,6 +17,7 @@ const formatAvailability = (value) => {
     return value;
 }
 
+// 設備・サービステーブルの項目リスト
 const SHOP_FEATURE_ITEMS = [
     { key: "capacity", label: "総席数", format: formatRaw },
     { key: "card", label: "カード支払い", format: formatRaw },
@@ -40,6 +44,7 @@ function Detail() {
     const [results, setResults] = useState({});
     const [loading, setLoading] = useState(true);
 
+    // 依存配列なし → ロード時のみ実行
     useEffect (() => {
         let ignore = false;
 
@@ -83,7 +88,9 @@ function Detail() {
 
     return (
         <main>
+            {/* 店舗記事 */}
             <article>
+                {/* ショップヘッダー */}
                 <header className={styles.shopHeader}>
                     <img className={styles.shopPhoto} src={results.photo.large}></img>
                     <div className={styles.shopNameBox}>
@@ -104,6 +111,7 @@ function Detail() {
                         {results.area && (
                             <div className={styles.searchLinks}>
                                 {results.genre.map((genre, index) => (
+                                    // TODO: リンクに変更する
                                     <span key={index} className={styles.searchLink}>
                                         {results.area.name} × {genre.name} で探す →
                                     </span>
@@ -113,6 +121,7 @@ function Detail() {
                     </div>
                 </header>
 
+                {/* 店舗の基本情報テーブル */}
                 <table className={styles.shopInfoTable}>
                     <caption>【基本情報】</caption>
                     <tbody>
@@ -162,6 +171,7 @@ function Detail() {
                     </tbody>
                 </table>
 
+                {/* 店舗の設備・サービステーブル */}
                 <table className={styles.shopInfoTable}>
                     <caption>【設備・サービス】</caption>
                     <tbody>
@@ -178,6 +188,7 @@ function Detail() {
                     </tbody>
                 </table>
                 
+                {/* ホットペッパーグルメサイトにジャンプするリンクを設置 */}
                 <div className={styles.hotpepperLinkBox}>
                     <a className={styles.hotpepperLink} href={results.url} target="_black">ホットペッパーグルメで見る ↗︎</a>
                 </div>
