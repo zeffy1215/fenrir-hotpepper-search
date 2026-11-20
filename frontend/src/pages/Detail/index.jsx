@@ -3,6 +3,35 @@ import { useSearchParams } from "react-router";
 import { detailShop } from "../../api/shops";
 import styles from "./Detail.module.css";
 
+const formatRaw = (value) => {
+    return value;
+}
+const formatAvailability = (value) => {
+    if (value === null) return "掲載なし";
+    else if (value === true) return "あり";
+    else if (value === false) return "なし";
+
+    return value;
+}
+
+const SHOP_FEATURE_ITEMS = [
+    { key: "capacity", label: "総席数", format: formatRaw },
+    { key: "card", label: "カード支払い", format: formatRaw },
+    { key: "lunch", label: "ランチメニュー", format: formatAvailability },
+    { key: "course", label: "コースメニュー", format: formatAvailability },
+    { key: "free_drink", label: "飲み放題", format: formatAvailability },
+    { key: "free_food", label: "食べ放題", format: formatAvailability },
+    { key: "charter", label: "貸切", format: formatAvailability },
+    { key: "private_room", label: "個室", format: formatAvailability },
+    { key: "tatami", label: "座敷", format: formatAvailability },
+    { key: "parking", label: "駐車場", format: formatAvailability },
+    { key: "non_smoking", label: "喫煙/禁煙", format: formatAvailability },
+    { key: "child", label: "子供連れ", format: formatAvailability },
+    { key: "pet", label: "ペット", format: formatAvailability },
+    { key: "barrier_free", label: "バリアフリー", format: formatAvailability },
+    { key: "wedding", label: "ウェディング･二次会", format: formatAvailability },
+];
+
 function Detail() {
     const [searchParams] = useSearchParams();
 
@@ -119,6 +148,27 @@ function Detail() {
                     </tr>
                 </tbody>
             </table>
+
+                <table>
+                    <caption>【設備・サービス】</caption>
+                    <tbody>
+                        {SHOP_FEATURE_ITEMS.map((item) => (
+                            <Fragment key={item.key}>
+                                {results[item.key] != null && (
+                                    <tr>
+                                        <th scope="row">{item.label}</th>
+                                        <td>{item.format(results[item.key])}</td>
+                                    </tr>
+                                )}
+                            </Fragment>
+                        ))}
+                    </tbody>
+                </table>
+                
+                <div className={styles.hotpepperLinkBox}>
+                    <a className={styles.hotpepperLink} href={results.url} target="_black">ホットペッパーグルメで見る ↗︎</a>
+                </div>
+            </article>
         </main>
     );
 }
