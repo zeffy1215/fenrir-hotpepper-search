@@ -18,6 +18,22 @@ class ShopOpen:
     hours: str                           # 営業時間
 
 """
+お店のジャンル
+"""
+@dataclass
+class ShopGenre:
+    code: str                           # ジャンルコード
+    name: str                           # ジャンル名
+
+"""
+お店のエリア(ミドルエリア)
+"""
+@dataclass
+class ShopArea:
+    code: str                           # ジャンルコード
+    name: str                           # エリア名
+
+"""
 検索結果の一覧に表示する、店舗1件分の情報
 ホットペッパーAPIの店舗情報のうち、一覧画面で必要な項目だけを持つ。
 """
@@ -30,8 +46,7 @@ class ShopInfo:
     address: str                         # 住所
     access: str                          # お店アクセス
 
-    genre_name: str                      # お店のジャンル(name)
-    sub_genre: str | None                # お店のサブジャンル
+    genre: list[ShopGenre]               # ジャンル
 
     catch: str                           # お店キャッチ
 
@@ -55,7 +70,7 @@ class ShopListResponse:
 
 @dataclass(kw_only=True)
 class ShopDetailResponse(ShopInfo):
-    area: str | None                     # 店舗エリア
+    area: ShopArea | None                # 店舗エリア
 
     lat: float | None                    # 店舗緯度
     lng: float | None                    # 店舗経度

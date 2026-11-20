@@ -5,7 +5,7 @@ from exceptions.hotpepper_exception import (HotpepperTimeoutError, HotpepperGate
     HotpepperApiKeyError, HotpepperBadRequestError, HotpepperNotFoundError, HotpepperMultipleResultsError, HotpepperError)
 from dataclasses import asdict
 from dto.shop_search_params import ShopSearchByLocationParamsDto
-from dto.shop_search_response import ShopPhoto, ShopOpen, ShopInfo, ShopListResponse, ShopDetailResponse
+from dto.shop_search_response import ShopPhoto, ShopOpen, ShopGenre, ShopArea, ShopInfo, ShopListResponse, ShopDetailResponse
 from config import Config
 
 # codeが取りうる範囲(ホットペッパーのreference.htmlの13を参照)
@@ -46,6 +46,27 @@ def to_shop_photo(shop: dict) -> ShopPhoto:
         small=photo.get("s")
     )
 
+# お店のジャンルを(コード、ジャンル名)の形のリストに変更
+def to_shop_genre(shop: dict) -> list[ShopGenre]:
+    genres = [shop.get(key, {}) for key in ["genre", "sub_genre"]]
+
+    return [
+        ShopGenre(code=genre.get("code"), name=genre.get("name"))
+        for genre in genres
+        if genre.get("code") and genre.get("name")
+    ]
+
+def to_shop_area(shop: dict) -> ShopArea:
+    area = shop.get("middle_area")
+    if not area:
+        return None
+    
+    return ShopArea(
+        code=area.get("code"),
+        name=area.get("name")
+    )
+    
+
 # type=liteを指定したときに取得されないものと入れ子のものは、getで取得
 # 店舗一覧と店舗詳細で共通して取り出す部分を辞書で返す
 def shop_info_fields(shop: dict) -> dict:
@@ -57,8 +78,7 @@ def shop_info_fields(shop: dict) -> dict:
         "address": shop["address"],
         "access": shop["access"],
 
-        "genre_name": shop.get("genre", {}).get("name"),
-        "sub_genre": shop.get("sub_genre", {}).get("name"),
+        "genre": to_shop_genre(shop),
 
         "catch": shop["catch"],
         "open": format_open((shop.get("open"))),
@@ -75,7 +95,7 @@ def to_shop_info(shop: dict) -> ShopInfo:
 def to_shop_detail(shop: dict) -> ShopDetailResponse:
     return ShopDetailResponse(
         **shop_info_fields(shop),
-        area=shop.get("middle_area", {}).get("name"),
+        area=to_shop_area(shop),
 
         lat=shop["lat"],
         lng=shop["lng"],
