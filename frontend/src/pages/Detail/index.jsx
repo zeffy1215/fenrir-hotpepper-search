@@ -98,8 +98,8 @@ function Detail() {
                             ))}
                         </div>
 
-                        <p className={styles.shopArea}>エリア：{results.area ? results.area.name : "掲載なし"}</p>
-                        <p className={styles.shopStation}>最寄駅：{results.station ? results.station : "掲載なし"}</p>
+                        <p className={styles.shopArea}>エリア：{results.area.name || "掲載なし"}</p>
+                        <p className={styles.shopStation}>最寄駅：{results.station || "掲載なし"}</p>
 
                         {results.area && (
                             <div className={styles.searchLinks}>
@@ -147,7 +147,7 @@ function Detail() {
                                         ))}
                                     </>
                                 ) : (
-                                <td>{results.open ? results.open : "掲載なし"}</td>
+                                <td>{results.open || "掲載なし"}</td>
                                 )}
                             </td>
                         </tr>
