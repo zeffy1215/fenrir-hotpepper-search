@@ -33,6 +33,9 @@ function Result() {
     const lng = searchParams.get("lng");
     const range = searchParams.get("range");
 
+    const area = searchParams.get("area");
+    const genre = searchParams.get("genre");
+
     const start = Number(searchParams.get("start") ?? 1);
     const count = Number(searchParams.get("count") ?? 10);
 
@@ -92,6 +95,8 @@ function Result() {
                         "lat": lat,
                         "lng": lng,
                         "range": range,
+                        "area": area,
+                        "genre": genre,
                         "start": currentStart,
                         "count": fetchCount,
                         "order": order,
@@ -102,8 +107,10 @@ function Result() {
                         "lunch": lunch,
                         "midnight": midnight,
                     }
+
                     const params = Object.fromEntries(
-                        Object.entries(obj).filter(([k, v]) => v !== null)
+                        // 送るパラメータに0が意味のある数字として使うときはフィルター条件を変更する
+                        Object.entries(obj).filter(([k, v]) => v)
                     );
                     const res = await searchShops(params);
                     if (ignore) break;

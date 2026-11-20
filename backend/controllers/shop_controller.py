@@ -13,10 +13,13 @@ def search():
     lng = request.args.get("lng")
     search_range = request.args.get("range")
 
+    middle_area = request.args.get("area")
+
     start = request.args.get("start")
     count = request.args.get("count")
     order = request.args.get("order")
 
+    genre = request.args.get("genre")
     free_drink = request.args.get("free_drink")
     free_food = request.args.get("free_food")
     card = request.args.get("card")
@@ -29,10 +32,13 @@ def search():
         "lng": lng,
         "range": search_range,
 
+        "middle_area": middle_area,
+
         "start": start,
         "count": count,
         "order": order,
 
+        "genre": genre,
         "free_drink": free_drink,
         "free_food": free_food,
         "card": card,
