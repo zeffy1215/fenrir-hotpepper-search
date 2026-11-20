@@ -107,8 +107,10 @@ function Result() {
                         "lunch": lunch,
                         "midnight": midnight,
                     }
+
                     const params = Object.fromEntries(
-                        Object.entries(obj).filter(([k, v]) => v !== null)
+                        // 送るパラメータに0が意味のある数字として使うときはフィルター条件を変更する
+                        Object.entries(obj).filter(([k, v]) => v)
                     );
                     const res = await searchShops(params);
                     if (ignore) break;
