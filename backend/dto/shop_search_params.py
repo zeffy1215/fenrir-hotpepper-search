@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from .validators import validate_number
+from exceptions.validation_exception import ValidationError
 
 """
 位置情報と検索範囲による検索の際に使用
@@ -48,4 +49,9 @@ class ShopSearchByLocationParamsDto:
         self.parking = validate_number(self.parking, name="駐車場", converter=int, min_value=0, max_value=1, required=False)
         self.lunch = validate_number(self.lunch, name="ランチあり", converter=int, min_value=0, max_value=1, required=False)
         self.midnight = validate_number(self.midnight, name="23時以降の営業", converter=int, min_value=0, max_value=1, required=False)
-    
+
+        has_location = all(value is not None for value in [self.lat, self.lng, self.range])
+        has_area = self.middle_area is not None
+
+        if not (has_location or has_area):
+            raise ValidationError("必須パラメータが不足しています")
