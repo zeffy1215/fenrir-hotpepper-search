@@ -115,52 +115,52 @@ function Detail() {
 
                 <table className={styles.shopInfoTable}>
                     <caption>【基本情報】</caption>
-                <tbody>
-                    <tr>
-                        <th scope="row">住所</th>
-                        <td>
-                            <p className={styles.address}>{results.address}</p>
-                            <iframe
-                                src={mapUrl}
-                                title="店舗の地図"
-                                allowfullscreen=""
-                                loading="lazy"
-                                referrerpolicy="no-referrer-when-downgrade"
-                                className={styles.map}
-                            ></iframe>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">アクセス</th>
-                        <td>{results.access}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">営業時間</th>
-                        <td>
-                            {Array.isArray(results.open) ? (
-                                <>
-                                    {results.open.map((o, index) => (
-                                        <div key={index} className={styles.shopOpen}>
-                                            <p className={styles.shopOpenDays}>{o.days}</p>
-                                            <p className={styles.shopOpenHours}>{o.hours}</p>
-                                        </div>
-                                    ))}
-                                </>
-                            ) : (
-                               <td>{results.open ? results.open : "掲載なし"}</td>
-                            )}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">定休日</th>
-                        <td>{results.close ? results.close.replace(/定休[日]?[:：]?/, "") : "掲載なし"}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">ディナー予算</th>
-                        <td>{results.budget}</td>
-                    </tr>
-                </tbody>
-            </table>
+                    <tbody>
+                        <tr>
+                            <th scope="row">住所</th>
+                            <td>
+                                <p className={styles.address}>{results.address}</p>
+                                <iframe
+                                    src={mapUrl}
+                                    title="店舗の地図"
+                                    allowfullscreen=""
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade"
+                                    className={styles.map}
+                                ></iframe>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">アクセス</th>
+                            <td>{results.access}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">営業時間</th>
+                            <td>
+                                {Array.isArray(results.open) ? (
+                                    <>
+                                        {results.open.map((o, index) => (
+                                            <div key={index} className={styles.shopOpen}>
+                                                <p className={styles.shopOpenDays}>{o.days}</p>
+                                                <p className={styles.shopOpenHours}>{o.hours}</p>
+                                            </div>
+                                        ))}
+                                    </>
+                                ) : (
+                                <td>{results.open ? results.open : "掲載なし"}</td>
+                                )}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">定休日</th>
+                            <td>{results.close ? results.close.replace(/定休[日]?[:：]?/, "") : "掲載なし"}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">ディナー予算</th>
+                            <td>{results.budget}</td>
+                        </tr>
+                    </tbody>
+                </table>
 
                 <table className={styles.shopInfoTable}>
                     <caption>【設備・サービス】</caption>
