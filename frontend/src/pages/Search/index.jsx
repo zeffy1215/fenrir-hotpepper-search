@@ -133,6 +133,18 @@ function SearchShops() {
         </main>
     )
 
+    // 現在地検索の必須パラメータ
+    const hasLat = Number.isFinite(lat);
+    const hasLng = Number.isFinite(lng);
+    const hasRange = RANGE_OPTIONS.map((option) => option.value).includes(range);
+    
+    const hasLocation = [hasLat, hasLng, hasRange].every(Boolean);
+
+    // エリア検索の必須パラメータ
+    const hasArea = (typeof area === "string" && area.trim() !== ""); 
+
+    const canSearch = searchType === "location" ? hasLocation : hasArea;
+
     return (
         <main>
             <div>
