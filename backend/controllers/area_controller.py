@@ -35,13 +35,13 @@ def get_middle_area_master(code):
     return jsonify(res), 200
 
 @area_bp.route("/small/<code>")
-def get_middle_area_master(code):
+def get_small_area_master(code):
     params = {
         "middle_area": code
     }
 
     try:
-        res = area_service.get_middle_area_master(params)
+        res = area_service.get_small_area_master(params)
     except HotpepperTimeoutError as e: 
         return jsonify({"error": str(e)}), 504 # Gateway Timeout
     except HotpepperError as e:
