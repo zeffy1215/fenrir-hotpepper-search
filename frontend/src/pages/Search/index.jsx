@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import Select from 'react-select';
-import styles from "./Search.module.css"
+import { getLargeAreaMaster, getMiddleAreaMaster, getSmallAreaMaster } from "../../api/areas";
+import styles from "./Search.module.css";
+
+const STORAGE_KEY = "searchConditions";
 
 const DEFAULT_SEARCH_VALUE = {
     start: 1,
