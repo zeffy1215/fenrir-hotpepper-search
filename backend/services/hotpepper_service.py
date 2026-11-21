@@ -54,3 +54,6 @@ def request_middle_area_master(params: dict) -> dict:
 
 def request_small_area_master(params: dict) -> dict:
     return request_hotpepper(Config.HOTPEPPER_SMALL_MASTER_API_URL, params)
+
+def request_genre_master() -> dict:
+    return request_hotpepper(Config.HOTPEPPER_GENRE_MASTER_API_URL, {})
