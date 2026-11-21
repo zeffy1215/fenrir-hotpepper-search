@@ -9,7 +9,7 @@ area_bp = Blueprint('area_bp', __name__)
 @area_bp.route("/large")
 def get_learge_area_master():
     try:
-        res = area_service.request_large_area_master()
+        res = area_service.get_large_area_master()
     except HotpepperTimeoutError as e: 
         return jsonify({"error": str(e)}), 504 # Gateway Timeout
     except HotpepperError as e:
