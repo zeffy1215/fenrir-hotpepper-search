@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 """
 エリアに対応するコードと地名
+ReactのSelectで直接使えるためにキーをvalueとlabelに統一
 """
 @dataclass
 class Area:
