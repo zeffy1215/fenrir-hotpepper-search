@@ -14,6 +14,7 @@ class Config:
     HOTPEPPER_GOURMET_SEARCH_API_URL = "https://webservice.recruit.co.jp/hotpepper/gourmet/v1/"
     HOTPEPPER_LARGE_MASTER_API_URL = "https://webservice.recruit.co.jp/hotpepper/large_area/v1/"
     HOTPEPPER_MIDDLE_MASTER_API_URL = "https://webservice.recruit.co.jp/hotpepper/middle_area/v1/"
+    HOTPEPPER_SMALL_MASTER_API_URL = "https://webservice.recruit.co.jp/hotpepper/small_area/v1/"
     
     # HotPepperのAPIキー
     API_KEY = os.getenv('API_KEY')
