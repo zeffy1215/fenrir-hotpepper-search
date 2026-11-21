@@ -44,8 +44,18 @@ function SearchShops() {
     const [lng, setLng] = useState(null);
     const [range, setRange] = useState("3");
 
-    // エリア検索の必須パラメータ
-    const [area, setArea] = useState(null);
+    // エリア検索のパラメータ(大エリアは必須)
+    // 大エリア
+    const [largeArea, setLargeArea] = useState(null);
+    const [largeAreaList, setLargeAreaList] = useState([]);
+
+    // 中エリア
+    const [middleArea, setMiddleArea] = useState(null);
+    const [middleAreaList, setMiddleAreaList] = useState([]);
+
+    // 小エリア
+    const [smallArea, setSmallArea] = useState(null);
+    const [smallAreaList, setSmallAreaList] = useState([]);
 
     // 任意パラメータ
     const [genre, setGenre] = useState(null);
@@ -147,11 +157,83 @@ function SearchShops() {
 
     return (
         <main>
-            <div>
-                <Select id="range" defaultValue={range_options[2]} onChange={handleRangeChange} options={range_options}>
-                </Select>
-                <button id="search-button" onClick={handleSearchClick}>検索</button>
-            </div>
+            <fieldset>
+                <legend>検索方法を選択してください</legend>
+                {SEARCH_TYPE_OPTIONS.map((option) => (
+                    <label key={option.value}>
+                        <input
+                            type="radio"
+                            name="search-type"
+                            value={option.value}
+                            checked={searchType === option.value}
+                            onChange={(e) => setSearchType(e.target.value)}
+                        />
+                            {option.label}
+                    </label>
+                ))}
+            </fieldset>
+
+            {searchType && (
+                <>
+                {searchType === "location" ? (
+                    <div className={styles.rangeBox}>
+                        <span>現在地からの距離：</span>
+                        <Select
+                            defaultValue={RANGE_OPTIONS.find((option) => option.value === "3")}
+                            value={RANGE_OPTIONS.find((option) => option.value === range)}
+                            onChange={(e) => setRange(e.value)}
+                            options={RANGE_OPTIONS}
+                        ></Select>
+                    </div>
+                ) : (
+                    <div>
+                        <div className={styles.largeAreaBox}>
+                            <Select
+                                value={largeAreaList.find((o) => o.value === largeArea) ?? null}
+                                onChange={handleLargeAreaChange}
+                                options={largeAreaList}
+                                placeholder="都道府県を選択"
+                                isDisabled={largeAreaList.length === 0}
+                            ></Select>
+                        </div>
+                        <div className={styles.middleAreaBox}>
+                            <Select
+                                value={middleAreaList.find((o) => o.value === middleArea) ?? null}
+                                onChange={handleMiddleAreaChange}
+                                options={middleAreaList}
+                                placeholder="エリアを選択"
+                                isDisabled={middleAreaList.length === 0}
+                            ></Select>
+                        </div>
+                        <div className={styles.smallAreaBox}>
+                            <Select
+                                value={smallAreaList.find((o) => o.value === smallArea) ?? null}
+                                onChange={(e) => setSmallArea(e.value)}
+                                options={smallAreaList}
+                                placeholder="エリアを選択"
+                                isDisabled={smallAreaList.length === 0}
+                            ></Select>
+                        </div>
+                    </div>
+                )}
+                </>
+            )}
+
+            <fieldset>
+                <legend>絞り込み条件</legend>
+                {customSearchList.map((item, index) => (
+                    <label key={index}>
+                        <input 
+                            type="checkbox"
+                            checked={flagToBool(item.value)}
+                            onChange={(e) => item.set(boolToFlag(e.target.checked))}
+                        />
+                        {item.label}
+                    </label>
+                ))}
+            </fieldset>
+
+            <button onClick={handleSearchClick} disabled={!canSearch}>検索</button>
         </main>
     );
 
