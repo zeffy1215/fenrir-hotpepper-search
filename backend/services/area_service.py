@@ -1,6 +1,6 @@
 from dataclasses import asdict
-from dto.area_mastar_response import Area, LargeMasterResponse
-from .hotpepper_service import request_large_area_master
+from dto.area_mastar_response import Area, AreaMasterResponse
+from .hotpepper_service import request_large_area_master, request_middle_area_master
 
 # 都道府県の並び順（参考:https://www.asahi-net.or.jp/~ax2s-kmtn/ref/jisx0401.html）
 # ホットペッパーの large_area の name に合わせて、「都」「府」「県」を付けない
@@ -21,8 +21,18 @@ def prefecture_priority(area) -> int:
     except ValueError:
         return 50
 
-def get_large_area_master() -> LargeMasterResponse:
+def get_large_area_master() -> AreaMasterResponse:
     results = request_large_area_master()
     areas = [Area(value=area["code"], label=area["name"]) for area in results["large_area"]]
     areas.sort(key=lambda area: prefecture_priority(area.label))
-    return LargeMasterResponse(areas=areas)
+    return AreaMasterResponse(areas=areas)
+
+def get_middle_area_master(params: dict) -> AreaMasterResponse:
+    results = request_middle_area_master(params)
+    areas = [Area(value=area["code"], label=area["name"]) for area in results["middle_area"]]
+    return AreaMasterResponse(areas=areas)
+
+def get_small_area_master(params: dict) -> AreaMasterResponse:
+    results = request_middle_area_master(params)
+    areas = [Area(value=area["code"], label=area["name"]) for area in results["small_area"]]
+    return AreaMasterResponse(areas=areas)

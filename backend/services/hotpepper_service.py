@@ -48,3 +48,9 @@ def request_gourmet_search(params: dict) -> dict:
 
 def request_large_area_master() -> dict:
     return request_hotpepper(Config.HOTPEPPER_LARGE_MASTER_API_URL, {})
+
+def request_middle_area_master(params: dict) -> dict:
+    return request_hotpepper(Config.HOTPEPPER_MIDDLE_MASTER_API_URL, params)
+
+def request_small_area_master(params: dict) -> dict:
+    return request_hotpepper(Config.HOTPEPPER_SMALL_MASTER_API_URL, params)
