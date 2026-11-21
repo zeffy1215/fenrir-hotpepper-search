@@ -35,6 +35,26 @@ const flagToBool = (value) => {
     return value === 1;
 }
 
+// セレクトで選ぶ値がvalueに含まれる値かをチェックする
+const validateSearchTypeOption = (value) => {
+    return SEARCH_TYPE_OPTIONS.map((option) => option.value.includes(value));
+}
+const validateRangeOption = (value) => {
+    return RANGE_OPTIONS.map((option) => option.value.includes(value));
+}
+
+// チェックボックスで選ぶ値が[0,1]のどちらかチェックする
+const validateFlag = (value) => {
+    return (value === 1 || value === 0);
+}
+
+// 文字列であり、値があるかをチェックする
+const validateStr = (value) => {
+    return (typeof value === "string" && value.trim() !== "")
+}
+
+
+
 function SearchShops() {
     // 検索方法
     const [searchType, setSearchType] = useState(null);
@@ -74,6 +94,21 @@ function SearchShops() {
         { value: parking, label: "駐車場", set: setParking },
         { value: lunch, label: "ランチメニュー", set: setLunch },
         { value: midnight, label: "23時以降の営業", set: setMidnight },
+    ];
+
+    const searchConditions = [
+        { key: "searchType", value: searchType, set: setSearchType, validate: validateSearchTypeOption },
+        { key: "range", value: range, set: setRange, validate: validateRangeOption },
+        { key: "largeArea", value: largeArea, set: setLargeArea, validate: validateStr },
+        { key: "middleArea", value: middleArea, set: setMiddleArea, validate: validateStr },
+        { key: "smallArea", value: smallArea, set: setSmallArea, validate: validateStr },
+        { key: "genre", value: genre, set: setGenre, validate: validateStr },
+        { key: "freeDrink", value: freeDrink, set: setFreeDrink, validate: validateFlag },
+        { key: "freeFood", value: freeFood, set: setFreeFood, validate: validateFlag },
+        { key: "card", value: card, set: setCard, validate: validateFlag },
+        { key: "parking", value: parking, set: setParking, validate: validateFlag },
+        { key: "lunch", value: lunch, set: setLunch, validate: validateFlag },
+        { key: "midnight", value: midnight, set: setMidnight, validate: validateFlag },
     ];
 
     const [loading, setLoading] = useState(false);
@@ -212,7 +247,9 @@ function SearchShops() {
                 "lng": lng,
                 "range": range,
             } : {
-                "area": area,
+                "large": largeArea,
+                "middle": middleArea,
+                "small": smallArea,
             }),
 
             "genre": genre,
@@ -231,6 +268,14 @@ function SearchShops() {
             Object.entries(obj).filter(([k, v]) => v)
         );
         const params = new URLSearchParams(filteredObject);
+
+        const data = Object.fromEntries(
+            searchConditions.map(({key, value}) => {
+                return [key, value];
+            })
+        );
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
         navigate(`/result?${params}`);
     }
 
