@@ -33,7 +33,10 @@ function Result() {
     const lng = searchParams.get("lng");
     const range = searchParams.get("range");
 
-    const area = searchParams.get("area");
+    const largeArea = searchParams.get("large");
+    const middleArea = searchParams.get("middle");
+    const smallArea = searchParams.get("small");
+
     const genre = searchParams.get("genre");
 
     const start = Number(searchParams.get("start") ?? 1);
@@ -95,7 +98,9 @@ function Result() {
                         "lat": lat,
                         "lng": lng,
                         "range": range,
-                        "area": area,
+                        "large_area": largeArea,
+                        "middle_area": middleArea,
+                        "small_area": smallArea,
                         "genre": genre,
                         "start": currentStart,
                         "count": fetchCount,

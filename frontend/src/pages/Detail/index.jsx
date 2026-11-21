@@ -19,7 +19,7 @@ const formatAvailability = (value) => {
 
 const createAreaSearchQuery = (area, genre) => {
     return new URLSearchParams({
-        "area": area,
+        "middle": area,
         "genre": genre,
         "start": 1,
         "count": 10,
