@@ -6,7 +6,10 @@ import styles from "./Search.module.css"
 const DEFAULT_SEARCH_VALUE = {
     start: 1,
     count: 10,
-    order: 1
+    order: {
+        location: 1,
+        area: 4
+    }
 }
 
 const SEARCH_TYPE_OPTIONS = [
