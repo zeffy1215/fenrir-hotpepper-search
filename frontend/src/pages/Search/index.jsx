@@ -33,11 +33,37 @@ const flagToBool = (value) => {
 }
 
 function SearchShops() {
+    // 検索方法
+    const [searchType, setSearchType] = useState(null);
+
+    // 現在地検索の必須パラメータ
     const [lat, setLat] = useState(null);
     const [lng, setLng] = useState(null);
     const [range, setRange] = useState("3");
 
-    const [loading, setLoading] = useState(true)
+    // エリア検索の必須パラメータ
+    const [area, setArea] = useState(null);
+
+    // 任意パラメータ
+    const [genre, setGenre] = useState(null);
+
+    const [freeDrink, setFreeDrink] = useState(0);
+    const [freeFood, setFreeFood] = useState(0);
+    const [card, setCard] = useState(0);
+    const [parking, setParking] = useState(0);
+    const [lunch, setLunch] = useState(0);
+    const [midnight, setMidnight] = useState(0);
+
+    const customSearchList = [
+        { value: freeDrink, label: "飲み放題", set: setFreeDrink },
+        { value: freeFood, label: "食べ放題", set: setFreeFood },
+        { value: card, label: "カード利用可", set: setCard },
+        { value: parking, label: "駐車場", set: setParking },
+        { value: lunch, label: "ランチメニュー", set: setLunch },
+        { value: midnight, label: "23時以降の営業", set: setMidnight },
+    ];
+
+    const [loading, setLoading] = useState(false);
     // const [error, setError] = useState(null);
 
     const navigate = useNavigate();
