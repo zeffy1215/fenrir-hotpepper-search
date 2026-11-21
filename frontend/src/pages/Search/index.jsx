@@ -82,29 +82,126 @@ function SearchShops() {
     const navigate = useNavigate();
 
     useEffect (() => {
-        if (!("geolocation" in navigator)) {
-            console.log("geolocation が使用不可になっています");
-            // setError("geolocation が使用不可になっています")
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                setLat(position.coords.latitude);
-                setLng(position.coords.longitude);
-                setLoading(false);
-            },
-            (error) => {
-                console.error(`エラー: ${error.code} - ${error.message}`);
-                // setError(`エラー: ${error.code} - ${error.message}`);
-                setLoading(false);
-            },
-            {
-                enableHighAccuracy: true,   // 高精度モード：ON
-                timeout: 10000,             // タイムアウト時間(10秒)
-                maximumAge: 0               // キャッシュの有効時間
+        try {
+            const data = JSON.parse(sessionStorage.getItem(STORAGE_KEY));
+            if (data === null || typeof data !== 'object' || Array.isArray(data)) return;
+            for (const searchCondition of searchConditions) {
+                if (searchCondition.validate(data[searchCondition.key])) {
+                    searchCondition.set(data[searchCondition.key]);
+                }
             }
-        )  
-    }, []);
+            sessionStorage.removeItem(STORAGE_KEY);
+        } catch (_) {}
+    }, [])
+
+    // 検索方法変更に関するuseEffect
+    useEffect (() => {
+        const fetchLargeArea = async () => {
+            setLoading(true);
+            try {
+                const res = await getLargeAreaMaster();
+                setLargeAreaList(res["areas"]);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (searchType === "location") {
+            if (!("geolocation" in navigator)) {
+                alert("位置情報が取得できませんでした。\n(エリア検索に切り替えます)");
+                setSearchType("area");
+                setLoading(false);
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setLat(position.coords.latitude);
+                    setLng(position.coords.longitude);
+                    
+                    setLoading(false);
+                },
+                (error) => {
+                    console.error(`エラー: ${error.code} - ${error.message}`);
+                    alert("ブラウザの設定で位置情報を許可してください\n(エリア検索に切り替えます)");
+                    setSearchType("area");
+                    setLoading(false);
+                },
+                {
+                    enableHighAccuracy: true,   // 高精度モード：ON
+                    timeout: 10000,             // タイムアウト時間(10秒)
+                    maximumAge: 0               // キャッシュの有効時間
+                }
+            )
+        } else if (searchType === "area") {
+            if (largeAreaList.length === 0) fetchLargeArea();
+        }
+    }, [searchType]);
+
+    // 大エリア変更時に関するuseEffect
+    useEffect (() => {
+        let ignore = false;
+        if (!validateStr(largeArea)) return;
+
+        const fetchMiddleArea = async () => {
+            try {
+                const res = await getMiddleAreaMaster(largeArea);
+                if (!ignore) setMiddleAreaList(res["areas"]);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchMiddleArea();
+
+        return () => {
+            ignore = true;
+        }
+    }, [largeArea])
+
+    // 中エリア変更に関するuseEffect
+    useEffect (() => {
+        let ignore = false;
+        if (!validateStr(middleArea)) return;
+
+        const fetchMiddleArea = async () => {
+            try {
+                const res = await getSmallAreaMaster(middleArea);
+                if (!ignore) setSmallAreaList(res["areas"]);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchMiddleArea();
+
+        return () => {
+            ignore = true;
+        }
+    }, [middleArea])
+
+    function handleLargeAreaChange(e) {
+        const value = e.value;
+        if (!validateStr(value)) return;
+
+        setLargeArea(value);
+        setMiddleArea(null);
+        setSmallArea(null);
+
+        setMiddleAreaList([]);
+        setSmallAreaList([]);
+    }
+
+    function handleMiddleAreaChange(e) {
+        const value = e.value;
+        if (!validateStr(value)) return;
+
+        setMiddleArea(value);
+        setSmallArea(null);
+        setSmallAreaList([]);
+    }
 
     function handleSearchClick() {
         const obj = {
