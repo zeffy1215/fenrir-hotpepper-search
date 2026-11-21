@@ -1,13 +1,25 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import Select from 'react-select';
+import styles from "./Search.module.css"
 
-const range_options = [
-    { value: "1", label: "300m" },
-    { value: "2", label: "500m" },
-    { value: "3", label: "1km" },
-    { value: "4", label: "2km" },
-    { value: "5", label: "3km" },
+const DEFAULT_SEARCH_VALUE = {
+    start: 1,
+    count: 10,
+    order: 1
+}
+
+const SEARCH_TYPE_OPTIONS = [
+    { value: "location", label: "現在地" },
+    { value: "area", label: "エリア" },
+]
+
+const RANGE_OPTIONS = [
+    { value: "1", label: "300m以内" },
+    { value: "2", label: "500m以内" },
+    { value: "3", label: "1km以内" },
+    { value: "4", label: "2km以内" },
+    { value: "5", label: "3km以内" },
 ];
 
 function SearchShops() {
