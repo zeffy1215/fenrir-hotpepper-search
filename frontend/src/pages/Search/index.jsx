@@ -22,6 +22,16 @@ const RANGE_OPTIONS = [
     { value: "5", label: "3km以内" },
 ];
 
+// true/false を 1/0 に変換する
+const boolToFlag = (value) => {
+    if (value === true) return 1;
+    return 0;
+}
+// 1/0 を true/false に変換する
+const flagToBool = (value) => {
+    return value === 1;
+}
+
 function SearchShops() {
     const [lat, setLat] = useState(null);
     const [lng, setLng] = useState(null);
