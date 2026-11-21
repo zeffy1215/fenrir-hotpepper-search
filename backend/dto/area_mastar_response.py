@@ -10,8 +10,8 @@ class Area:
     label: str          # 地名
 
 """
-大エリアマスタAPI（GET /api/areas/large）がフロントエンドに返すレスポンス
+エリアマスタAPIがフロントエンドに返すレスポンス
 """
 @dataclass
-class LargeMasterResponse:
-    areas: list[Area]   # 都道府県のリスト
+class AreaMasterResponse:
+    areas: list[Area]   # エリアのリスト
