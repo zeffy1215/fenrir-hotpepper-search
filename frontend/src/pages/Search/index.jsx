@@ -96,21 +96,34 @@ function SearchShops() {
         )  
     }, []);
 
-    function handleRangeChange(e) {
-        setRange(e.value);
-    }
+    function handleSearchClick() {
+        const obj = {
+            "type": searchType,
 
-    async function handleSearchClick() {
-        const params = new URLSearchParams({
-            "lat": lat,
-            "lng": lng,
-            "range": Number(range),
-            "start": 1,
-            "count": 10,
-            "order": 1,
-            "type": "location"
-        });
-        
+            ...(searchType === "location" ? {
+                "lat": lat,
+                "lng": lng,
+                "range": range,
+            } : {
+                "area": area,
+            }),
+
+            "genre": genre,
+            "free_drink": freeDrink,
+            "free_food": freeFood,
+            "card": card,
+            "parking": parking,
+            "lunch": lunch,
+            "midnight": midnight,
+            "start": DEFAULT_SEARCH_VALUE.start,
+            "count": DEFAULT_SEARCH_VALUE.count,
+            "order": DEFAULT_SEARCH_VALUE.order[searchType],
+        };
+
+        const filteredObject = Object.fromEntries(
+            Object.entries(obj).filter(([k, v]) => v)
+        );
+        const params = new URLSearchParams(filteredObject);
         navigate(`/result?${params}`);
     }
 
