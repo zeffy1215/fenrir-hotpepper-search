@@ -4,5 +4,5 @@ from .hotpepper_service import request_genre_master
 def get_genre_master() -> GenreMasterResponse:
     results = request_genre_master()
     genres = [Genre(value=genre["code"], label=genre["name"]) for genre in results["genre"]]
-    return GenreMasterResponse(genre=genres)
+    return GenreMasterResponse(genres=genres)
 

@@ -14,4 +14,4 @@ class Genre:
 """
 @dataclass
 class GenreMasterResponse:
-    genre: list[Genre]   # ジャンルのリスト
+    genres: list[Genre]   # ジャンルのリスト
