@@ -1,4 +1,4 @@
-const API_BASE = '/api/area/';
+const API_BASE = '/api/areas';
 
 export const getLargeAreaMaster = async () => {
     const res = await fetch(`${API_BASE}/large`);
