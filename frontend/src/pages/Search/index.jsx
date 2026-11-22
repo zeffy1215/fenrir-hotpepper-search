@@ -61,7 +61,26 @@ const validateStr = (value) => {
     return (typeof value === "string" && value.trim() !== "")
 }
 
+// 配列であり、要素が存在するかをチェックする
+const validateArray = (value) => {
+    return (Array.isArray(value) && value.length !== 0);
+}
 
+// セレクトボックスのスタイル
+const selectStyles = {
+    control: (base, state) => ({
+        ...base,
+        cursor: state.isDisabled ? "not-allowed" : "pointer",
+    }),
+    option: (base, state) => ({
+        ...base,
+        cursor: state.isDisabled ? "not-allowed" : "pointer",
+    }),
+    container: (base) => ({
+        ...base,
+        pointerEvents: "auto",
+    }),
+};
 
 function SearchShops() {
     // 検索方法
