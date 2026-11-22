@@ -316,6 +316,16 @@ function SearchShops() {
         setSmallAreaList([]);
     }
 
+    function handleGenreChange(value, checked) {
+        if (checked) {
+            if (!genres.includes(value)) {
+                setGenres([...genres, value]);
+            }
+        } else {
+            setGenres(genres.filter((v) => v !== value));
+        }
+    }
+
     function handleSearchClick() {
         const obj = {
             "type": searchType,
@@ -330,7 +340,7 @@ function SearchShops() {
                 "small": smallArea,
             }),
 
-            "genre": genre,
+            "genre": genres.join(","),
             "free_drink": freeDrink,
             "free_food": freeFood,
             "card": card,
