@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import Select from 'react-select';
 import { getLargeAreaMaster, getMiddleAreaMaster, getSmallAreaMaster } from "../../api/areas";
+import { getGenreMaster  } from "../../api/genres";
 import styles from "./Search.module.css";
 
 const STORAGE_KEY = "searchConditions";
@@ -85,7 +86,8 @@ function SearchShops() {
     const [smallAreaList, setSmallAreaList] = useState([]);
 
     // 任意パラメータ
-    const [genre, setGenre] = useState(null);
+    const [genres, setGenres] = useState([]);
+    const [genreList, setGenreList] = useState([]);
 
     const [freeDrink, setFreeDrink] = useState(0);
     const [freeFood, setFreeFood] = useState(0);
@@ -109,7 +111,7 @@ function SearchShops() {
         { key: "largeArea", value: largeArea, set: setLargeArea, validate: validateStr },
         { key: "middleArea", value: middleArea, set: setMiddleArea, validate: validateStr },
         { key: "smallArea", value: smallArea, set: setSmallArea, validate: validateStr },
-        { key: "genre", value: genre, set: setGenre, validate: validateStr },
+        { key: "genre", value: genres, set: setGenres, validate: validateArray },
         { key: "freeDrink", value: freeDrink, set: setFreeDrink, validate: validateFlag },
         { key: "freeFood", value: freeFood, set: setFreeFood, validate: validateFlag },
         { key: "card", value: card, set: setCard, validate: validateFlag },
@@ -134,6 +136,23 @@ function SearchShops() {
             }
             sessionStorage.removeItem(STORAGE_KEY);
         } catch (_) {}
+    }, [])
+
+    useEffect (() => {
+        let ignore = false;
+        const fetchGenreMaster = async () => {
+            try {
+                const res = await getGenreMaster();
+                if (!ignore) setGenreList(res["genres"]);
+            } catch (err) {
+                console.error(err);
+            } 
+        }
+
+        fetchGenreMaster();
+        return () => {
+            ignore = true;
+        }
     }, [])
 
     // 検索方法変更に関するuseEffect
