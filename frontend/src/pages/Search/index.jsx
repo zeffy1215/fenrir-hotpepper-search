@@ -507,20 +507,20 @@ function SearchShops() {
                     <div className={styles.conditionsSelectBox}>
                         <fieldset className={styles.genreField}>
                             <legend className={styles.genreLegend}>ジャンル（複数選択可）</legend>
-                            {genreList !== 0 ? (
-                            <div className={styles.genreBox}>
-                                {genreList.map((item) => (
-                                    <label key={item.value} className={styles.genreLabel}>
-                                        <input 
-                                            type="checkbox"
-                                            checked={genres.includes(item.value)}
-                                            value={item.value}
-                                            onChange={(e) =>handleGenreChange(e.target.value, e.target.checked)}
-                                        />
-                                        {item.label}
-                                    </label>
-                                ))}
-                            </div>
+                            {genreList.length !== 0 ? (
+                                <div className={styles.genreBox}>
+                                    {genreList.map((item) => (
+                                        <label key={item.value} className={styles.genreLabel}>
+                                            <input 
+                                                type="checkbox"
+                                                checked={genres.includes(item.value)}
+                                                value={item.value}
+                                                onChange={(e) =>handleGenreChange(e.target.value, e.target.checked)}
+                                            />
+                                            {item.label}
+                                        </label>
+                                    ))}
+                                </div>
                             ) : (
                                 <div className={styles.genreBox}>
                                     <p className={styles.message}>ジャンル一覧を読み込み中...</p>
