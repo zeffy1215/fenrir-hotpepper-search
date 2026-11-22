@@ -76,14 +76,20 @@ function SearchShops() {
     // 大エリア
     const [largeArea, setLargeArea] = useState(null);
     const [largeAreaList, setLargeAreaList] = useState([]);
+    const [largeAreaMessage, setLargeAreaMessage] = useState("選択してください");
+    const [largeAreaLoading, setLargeAreaLoading] = useState(false);
 
     // 中エリア
     const [middleArea, setMiddleArea] = useState(null);
     const [middleAreaList, setMiddleAreaList] = useState([]);
+    const [middleAreaMessage, setMiddleAreaMessage] = useState("都道府県を指定してください");
+    const [middleAreaLoading, setMiddleAreaLoading] = useState(false);
 
     // 小エリア
     const [smallArea, setSmallArea] = useState(null);
     const [smallAreaList, setSmallAreaList] = useState([]);
+    const [smallAreaMessage, setSmallAreaMessage] = useState("エリアを選択してください");
+    const [smallAreaLoading, setSmallAreaLoading] = useState(false);
 
     // 任意パラメータ
     const [genres, setGenres] = useState([]);
@@ -157,15 +163,19 @@ function SearchShops() {
 
     // 検索方法変更に関するuseEffect
     useEffect (() => {
+        let ignore = false;
         const fetchLargeArea = async () => {
-            setLoading(true);
+            setLargeAreaLoading(true);
+            setLargeAreaMessage("読み込み中...");
             try {
                 const res = await getLargeAreaMaster();
-                setLargeAreaList(res["areas"]);
+                if (!ignore) setLargeAreaList(res["areas"]);
+                setLargeAreaMessage("選択してください");
             } catch (err) {
                 console.error(err);
+                setLargeAreaMessage("読み込み失敗");
             } finally {
-                setLoading(false);
+                setLargeAreaLoading(false);
             }
         };
 
@@ -199,6 +209,10 @@ function SearchShops() {
         } else if (searchType === "area") {
             if (largeAreaList.length === 0) fetchLargeArea();
         }
+
+        return () => {
+            ignore = true;
+        }
     }, [searchType]);
 
     // 大エリア変更時に関するuseEffect
@@ -207,11 +221,19 @@ function SearchShops() {
         if (!validateStr(largeArea)) return;
 
         const fetchMiddleArea = async () => {
+            setMiddleAreaLoading(true);
+            setMiddleAreaMessage("読み込み中...");
             try {
                 const res = await getMiddleAreaMaster(largeArea);
-                if (!ignore) setMiddleAreaList(res["areas"]);
+                if (!ignore) {
+                    setMiddleAreaList([{ value: null, label: "指定しない" }, ...res["areas"]]);
+                    setMiddleAreaMessage("指定しない");
+                }
             } catch (err) {
                 console.error(err);
+                setMiddleAreaMessage("読み込み失敗");
+            } finally {
+                setMiddleAreaLoading(false);
             }
         };
 
@@ -228,11 +250,19 @@ function SearchShops() {
         if (!validateStr(middleArea)) return;
 
         const fetchMiddleArea = async () => {
+            setSmallAreaLoading(true);
+            setSmallAreaMessage("読み込み中...");
             try {
                 const res = await getSmallAreaMaster(middleArea);
-                if (!ignore) setSmallAreaList(res["areas"]);
+                if (!ignore) {
+                    setSmallAreaList([{ value: null, label: "指定しない" }, ...res["areas"]]);
+                    setSmallAreaMessage("指定しない");
+                }
             } catch (err) {
                 console.error(err);
+                setSmallAreaMessage("読み込み失敗");
+            } finally {
+                setSmallAreaLoading(false);
             }
         };
 
@@ -245,7 +275,11 @@ function SearchShops() {
 
     function handleLargeAreaChange(e) {
         const value = e.value;
-        if (!validateStr(value)) return;
+        setSmallAreaMessage("エリアを選択してください");
+        if (!validateStr(value)) { 
+            setMiddleAreaMessage("都道府県を指定してください");
+            return;
+        }
 
         setLargeArea(value);
         setMiddleArea(null);
@@ -256,10 +290,9 @@ function SearchShops() {
     }
 
     function handleMiddleAreaChange(e) {
-        const value = e.value;
-        if (!validateStr(value)) return;
+        setSmallAreaMessage("エリアを選択してください");
 
-        setMiddleArea(value);
+        setMiddleArea(e.value);
         setSmallArea(null);
         setSmallAreaList([]);
     }
