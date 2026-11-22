@@ -387,86 +387,170 @@ function SearchShops() {
 
     return (
         <main>
-            <fieldset>
-                <legend>検索方法を選択してください</legend>
-                {SEARCH_TYPE_OPTIONS.map((option) => (
-                    <label key={option.value}>
-                        <input
-                            type="radio"
-                            name="search-type"
-                            value={option.value}
-                            checked={searchType === option.value}
-                            onChange={(e) => setSearchType(e.target.value)}
-                        />
-                            {option.label}
-                    </label>
-                ))}
-            </fieldset>
+            <h1>近くのお店を探す</h1>
+            <h2>探し方を選んで、条件を指定してください</h2>
 
-            {searchType && (
+            <div className={styles.fieldBox}>
+                <fieldset className={styles.searchField}>
+                    <legend className={styles.searchLegend}><span>1</span>探し方</legend>
+                    <div className={styles.searchTypeBox}>
+                        {SEARCH_TYPE_OPTIONS.map((option) => (
+                            <label className={styles.searchTypeLabel} key={option.value}>
+                                <input
+                                    type="radio"
+                                    name="search-type"
+                                    className={styles.searchTypeRadio}
+                                    value={option.value}
+                                    checked={searchType === option.value}
+                                    onChange={(e) => setSearchType(e.target.value)}
+                                />
+                                {option.label}
+                            </label>
+                        ))}
+                    </div>
+                </fieldset>
+            </div>
+
+            {searchType ? (
                 <>
                 {searchType === "location" ? (
-                    <div className={styles.rangeBox}>
-                        <span>現在地からの距離：</span>
-                        <Select
-                            defaultValue={RANGE_OPTIONS.find((option) => option.value === "3")}
-                            value={RANGE_OPTIONS.find((option) => option.value === range)}
-                            onChange={(e) => setRange(e.value)}
-                            options={RANGE_OPTIONS}
-                        ></Select>
+                    <div className={styles.fieldBox}>
+                        <fieldset className={styles.rangeBox}>
+                            <legend className={styles.searchLegend}><span>2</span>範囲</legend>
+                            {validateCoordinate(lat, lng) ? (
+                                <p className={styles.coordinateSuccess}>✔︎ 現在地を取得しました</p>
+                            ) : (
+                                <p className={styles.coordinateError}>× 現在地の取得に失敗しました。</p>
+                            )}
+                            <p>現在地からの距離</p>
+                            <div className={styles.rangeSelectBox}>
+                                {RANGE_OPTIONS.map((option) => (
+                                    <label className={styles.rangeLabel} key={option.value}>
+                                        <input
+                                            type="radio"
+                                            name="range"
+                                            className={styles.rangeRadio}
+                                            value={option.value}
+                                            checked={range === option.value}
+                                            onChange={(e) => setRange(e.target.value)}
+                                        />
+                                        {option.label}
+                                    </label>
+                                ))}
+                            </div>
+                        </fieldset>
                     </div>
                 ) : (
-                    <div>
-                        <div className={styles.largeAreaBox}>
-                            <Select
-                                value={largeAreaList.find((o) => o.value === largeArea) ?? null}
-                                onChange={handleLargeAreaChange}
-                                options={largeAreaList}
-                                placeholder="都道府県を選択"
-                                isDisabled={largeAreaList.length === 0}
-                            ></Select>
-                        </div>
-                        <div className={styles.middleAreaBox}>
-                            <Select
-                                value={middleAreaList.find((o) => o.value === middleArea) ?? null}
-                                onChange={handleMiddleAreaChange}
-                                options={middleAreaList}
-                                placeholder="エリアを選択"
-                                isDisabled={middleAreaList.length === 0}
-                            ></Select>
-                        </div>
-                        <div className={styles.smallAreaBox}>
-                            <Select
-                                value={smallAreaList.find((o) => o.value === smallArea) ?? null}
-                                onChange={(e) => setSmallArea(e.value)}
-                                options={smallAreaList}
-                                placeholder="エリアを選択"
-                                isDisabled={smallAreaList.length === 0}
-                            ></Select>
-                        </div>
+                    <div className={styles.fieldBox}>
+                        <fieldset className={styles.areaBox}>
+                            <legend className={styles.searchLegend}><span>2</span>エリア</legend>
+                            <div className={styles.areaSelectBox}>
+                                <div className={styles.largeAreaBox}>
+                                    <label htmlFor="largeArea">1. 都道府県（必須）</label>
+                                    <Select
+                                        inputId="largeArea"
+                                        isLoading={largeAreaLoading}
+                                        styles={selectStyles}
+                                        className={styles.areaSelect}
+                                        value={largeAreaList.find((o) => o.value === largeArea) ?? null}
+                                        onChange={handleLargeAreaChange}
+                                        options={largeAreaList}
+                                        placeholder={largeAreaMessage}
+                                        isDisabled={largeAreaList.length === 0}
+                                    ></Select>
+                                </div>
+                                <div className={styles.middleAreaBox}>
+                                    <label htmlFor="middleArea">2. エリア（任意）</label>
+                                    <Select
+                                        inputId="middleArea"
+                                        styles={selectStyles}
+                                        isLoading={middleAreaLoading}
+                                        className={styles.areaSelect}
+                                        value={middleAreaList.find((o) => o.value === middleArea) ?? null}
+                                        onChange={handleMiddleAreaChange}
+                                        options={middleAreaList}
+                                        placeholder={middleAreaMessage}
+                                        isDisabled={middleAreaList.length === 0}
+                                    ></Select>
+                                </div>
+                                <div className={styles.smallAreaBox}>
+                                    <label htmlFor="smallArea">3. 詳しいエリア（任意）</label>
+                                    <Select
+                                        inputId="smallArea"
+                                        styles={selectStyles}
+                                        isLoading={smallAreaLoading}
+                                        className={styles.areaSelect}
+                                        value={smallAreaList.find((o) => o.value === smallArea) ?? null}
+                                        onChange={(e) => setSmallArea(e.value)}
+                                        options={smallAreaList}
+                                        placeholder={smallAreaMessage}
+                                        isDisabled={smallAreaList.length === 0}
+                                    ></Select>
+                                </div>
+                            </div>
+                        </fieldset>
                     </div>
                 )}
                 </>
+            ) : (
+                <div className={styles.fieldBox}>
+                    <fieldset>
+                        <legend className={styles.searchLegend}><span>2</span>範囲 / エリア</legend>
+                        <p className={styles.message}>まず、①で探し方を選択してください</p>
+                    </fieldset>
+                </div>
             )}
 
-            <fieldset>
-                <legend>絞り込み条件</legend>
-                {customSearchList.map((item, index) => (
-                    <label key={index}>
-                        <input 
-                            type="checkbox"
-                            checked={flagToBool(item.value)}
-                            onChange={(e) => item.set(boolToFlag(e.target.checked))}
-                        />
-                        {item.label}
-                    </label>
-                ))}
-            </fieldset>
-
-            <button onClick={handleSearchClick} disabled={!canSearch}>検索</button>
+            <div className={styles.fieldBox}>
+                <fieldset className={styles.conditionsBox}>
+                    <legend className={styles.searchLegend}><span>3</span>絞り込み条件<span className={styles.legendMessage}>任意</span></legend>
+                    <div className={styles.conditionsSelectBox}>
+                        <fieldset className={styles.genreField}>
+                            <legend className={styles.genreLegend}>ジャンル（複数選択可）</legend>
+                            {genreList !== 0 ? (
+                            <div className={styles.genreBox}>
+                                {genreList.map((item) => (
+                                    <label key={item.value} className={styles.genreLabel}>
+                                        <input 
+                                            type="checkbox"
+                                            checked={genres.includes(item.value)}
+                                            value={item.value}
+                                            onChange={(e) =>handleGenreChange(e.target.value, e.target.checked)}
+                                        />
+                                        {item.label}
+                                    </label>
+                                ))}
+                            </div>
+                            ) : (
+                                <div className={styles.genreBox}>
+                                    <p className={styles.message}>ジャンル一覧を読み込み中...</p>
+                                </div>
+                            )}
+                        </fieldset>
+                        <fieldset className={styles.specificConditionField}>
+                            <legend className={styles.specificConditionLegend}>こだわり条件</legend>
+                            <div className={styles.specificConditionBox}>
+                                {customSearchList.map((item, index) => (
+                                    <label className={styles.specificConditionLabel} key={index}>
+                                        <input 
+                                            type="checkbox"
+                                            checked={flagToBool(item.value)}
+                                            onChange={(e) => item.set(boolToFlag(e.target.checked))}
+                                            />
+                                        {item.label}
+                                    </label>
+                                ))}
+                            </div>
+                        </fieldset>
+                    </div>
+                </fieldset>
+            </div>
+            
+            <div className={styles.searchButtonBox}>
+                <button className={styles.searchButton} onClick={handleSearchClick} disabled={!canSearch}>この条件で探す</button>
+            </div>
         </main>
     );
-
 }
 
 export default SearchShops;
