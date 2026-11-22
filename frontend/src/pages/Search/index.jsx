@@ -37,6 +37,10 @@ const boolToFlag = (value) => {
 const flagToBool = (value) => {
     return value === 1;
 }
+// 緯度と経度に数値が入っているかをチェックする
+const validateCoordinate = (lat, lng) => {
+    return (Number.isFinite(lat) && Number.isFinite(lng));
+}
 
 // セレクトで選ぶ値がvalueに含まれる値かをチェックする
 const validateSearchTypeOption = (value) => {
