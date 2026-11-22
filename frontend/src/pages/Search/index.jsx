@@ -17,8 +17,8 @@ const DEFAULT_SEARCH_VALUE = {
 }
 
 const SEARCH_TYPE_OPTIONS = [
-    { value: "location", label: "現在地" },
-    { value: "area", label: "エリア" },
+    { value: "location", label: "現在地から" },
+    { value: "area", label: "エリアから" },
 ]
 
 const RANGE_OPTIONS = [
