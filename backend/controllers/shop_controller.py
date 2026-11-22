@@ -13,7 +13,9 @@ def search():
     lng = request.args.get("lng")
     search_range = request.args.get("range")
 
-    middle_area = request.args.get("area")
+    large_area = request.args.get("large_area")
+    middle_area = request.args.get("middle_area")
+    small_area = request.args.get("small_area")
 
     start = request.args.get("start")
     count = request.args.get("count")
@@ -32,11 +34,9 @@ def search():
         "lng": lng,
         "range": search_range,
 
+        "large_area": large_area,
         "middle_area": middle_area,
-
-        "start": start,
-        "count": count,
-        "order": order,
+        "small_area": small_area,
 
         "genre": genre,
         "free_drink": free_drink,
@@ -45,6 +45,10 @@ def search():
         "parking": parking,
         "lunch": lunch,
         "midnight": midnight,
+
+        "start": start,
+        "count": count,
+        "order": order,
     }
 
     args = {k: v for k, v in args.items() if v}

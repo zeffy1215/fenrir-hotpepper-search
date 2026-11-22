@@ -12,19 +12,19 @@ NoneはServiceで弾く
 """
 @dataclass
 class ShopSearchByLocationParamsDto:
-    # 必須パラメータ
     lat: float | None = None                # 緯度(-90°~90°)
     lng: float | None = None                # 経度(-180°~180°)
     range: int | None = None                # 検索範囲(1,2,3,4,5)
 
-    middle_area: str | None = None          # エリア(中エリアを使用)
+    large_area: str | None = None           # エリア(大エリア)
+    middle_area: str | None = None          # エリア(中エリア)
+    small_area: str | None = None           # エリア(小エリア)
 
     start: int = 1                          # 検索の開始位置(1~)
     count: int = 10                         # １ページの掲載件数(1~100)
 
     order: int = 4                          # ソート順(1,2,3,4)
 
-    # 任意パラメータ
     genre: str | None = None                # ジャンル
     free_drink: int | None = None           # 飲み放題(0,1)
     free_food: int | None = None            # 食べ放題(0,1)
@@ -51,7 +51,7 @@ class ShopSearchByLocationParamsDto:
         self.midnight = validate_number(self.midnight, name="23時以降の営業", converter=int, min_value=0, max_value=1, required=False)
 
         has_location = all(value is not None for value in [self.lat, self.lng, self.range])
-        has_area = self.middle_area is not None
+        has_area = any(value is not None for value in [self.large_area, self.middle_area, self.small_area])
 
         if not (has_location or has_area):
             raise ValidationError("必須パラメータが不足しています")

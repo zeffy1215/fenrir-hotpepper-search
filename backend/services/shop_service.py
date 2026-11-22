@@ -1,17 +1,9 @@
 import re
-import requests
-from requests.exceptions import Timeout
-from exceptions.hotpepper_exception import (HotpepperTimeoutError, HotpepperGatewayError ,
-    HotpepperApiKeyError, HotpepperBadRequestError, HotpepperNotFoundError, HotpepperMultipleResultsError, HotpepperError)
+from exceptions.hotpepper_exception import HotpepperNotFoundError, HotpepperMultipleResultsError, HotpepperError
 from dataclasses import asdict
 from dto.shop_search_params import ShopSearchByLocationParamsDto
 from dto.shop_search_response import ShopPhoto, ShopOpen, ShopGenre, ShopArea, ShopInfo, ShopListResponse, ShopDetailResponse
-from config import Config
-
-# codeが取りうる範囲(ホットペッパーのreference.htmlの13を参照)
-HOTPEPPER_ERROR_SERVER = 1000      # サーバー障害エラー
-HOTPEPPER_ERROR_AUTH = 2000        # APIキーまたはIPアドレスの認証エラー
-HOTPEPPER_ERROR_PARAMETER = 3000   # パラメータ不正エラー
+from .hotpepper_service import request_gourmet_search
 
 # 営業時間を(曜日：時間)の形に整形
 def format_open(text):
@@ -121,44 +113,9 @@ def to_shop_detail(shop: dict) -> ShopDetailResponse:
         lunch=to_availability(shop.get("lunch"))
     )
 
-# ホットペッパーAPIを叩く処理（ホットペッパーのエラー時はraiseする)
-def request_hotpepper(params: dict) -> dict:
-    params = {k: v for k, v in params.items() if v is not None}
-    params["key"] = Config.API_KEY
-    params["format"] = "json"
-
-    try:
-        response = requests.get(
-            url=Config.HOTPEPPER_API_URL,
-            params=params,
-            timeout=(Config.HOTPEPPER_CONNECT_TIMEOUT, Config.HOTPEPPER_READ_TIMEOUT)
-        )
-    except Timeout as e:
-        raise HotpepperTimeoutError("ホットペッパーAPIへのリクエストがタイムアウトしました") from e
-
-    data = response.json()
-    results = data["results"]
-
-    if 'error' in data["results"]:
-        errors = data["results"]["error"]
-        error = errors[0]
-
-        code = int(error["code"])
-
-        if code == HOTPEPPER_ERROR_SERVER:
-            raise HotpepperGatewayError("ホットペッパーサーバーに障害が発生しました(code=1000)")
-        elif code == HOTPEPPER_ERROR_AUTH: 
-            raise HotpepperApiKeyError("APIキーが正しくありません(code=2000)")
-        elif code == HOTPEPPER_ERROR_PARAMETER:
-            raise HotpepperBadRequestError("パラメーターが正しくありません(API_KEYなどの必須パラメータが不足している可能性があります) (code=3000)")
-        else:
-            raise HotpepperError(f"ホットペッパーAPI呼び出し中に不明なエラーが発生しました (code={str(code)})")
-
-    return results
-
 # 店舗一覧検索
 def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
-    results = request_hotpepper(asdict(params))
+    results = request_gourmet_search(asdict(params))
     shop_list = results["shop"]
 
     shops = [to_shop_info(shop) for shop in shop_list]
@@ -174,8 +131,7 @@ def search(params: ShopSearchByLocationParamsDto) -> ShopListResponse:
 
 # 店舗詳細検索（ID指定）
 def get_detail(params: dict) -> ShopDetailResponse:
-    results = request_hotpepper(params)
-
+    results = request_gourmet_search(params)
 
     try:
         if int(results["results_returned"]) == 0:
