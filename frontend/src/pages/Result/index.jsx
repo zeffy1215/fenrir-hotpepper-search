@@ -272,44 +272,46 @@ function Result() {
             {/* 店舗情報リスト */}
             <ul className={styles.shopList}>
                 {results.shops.map((shop) => (
-                    <li key={shop.id} className={styles.shopGrid}>
-                        <div className={styles.photo}>
-                            <img src={shop.photo.large} alt="店舗画像"></img>
-                        </div>
-                        <div className={styles.info}>
-                            <Link to={`/detail?id=${shop.id}`} className={styles.shopName}>{shop.name}</Link>
-                            <p className={styles.shopGenre}>
-                                {shop.genre.map((genre) => genre.name).join(" / ")}
-                                {shop.catch && (
-                                    <span className={styles.shopCatch}>{shop.catch}</span>
-                                )}
-                            </p>
-
-                            <p className={styles.shopAccess}>📍{shop.access}</p>
-
-                            <div className={styles.shopOpenBox}>
-                                <p className={styles.shopOpenTitle}>営業時間</p>
-                                <div className={styles.shopOpenGrid}>
-                                    {Array.isArray(shop.open) ? (
-                                        <>
-                                            {shop.open.map((o, index) => (
-                                                <Fragment key={index}>
-                                                    <span className={styles.shopOpenDays}>{o.days}</span>
-                                                    <span className={styles.shopOpenMark}>:</span>
-                                                    <span className={styles.shopOpenHours}>{o.hours}</span>
-                                                </Fragment>
-                                            ))}
-                                        </>
-                                    ) : (
-                                        <p className={styles.shopOpen}>{shop.open}</p>
+                    <Link to={`/detail?id=${shop.id}`} className={styles.detailLink}>
+                        <li key={shop.id} className={styles.shopGrid}>
+                            <div className={styles.photo}>
+                                <img src={shop.photo.large} alt="店舗画像"></img>
+                            </div>
+                            <div className={styles.info}>
+                                <p className={styles.shopName}>{shop.name}</p>
+                                <p className={styles.shopGenre}>
+                                    {shop.genre.map((genre) => genre.name).join(" / ")}
+                                    {shop.catch && (
+                                        <span className={styles.shopCatch}>{shop.catch}</span>
                                     )}
-                                    <span className={styles.shopCloseDays}>定休日</span>
-                                    <span className={styles.shopCloseMark}>:</span>
-                                    <span className={styles.shopCloseHours}>{shop.close ? shop.close.replace(/定休[日]?[:：]?/, "") : "掲載なし"}</span>
+                                </p>
+
+                                <p className={styles.shopAccess}>📍{shop.access}</p>
+
+                                <div className={styles.shopOpenBox}>
+                                    <p className={styles.shopOpenTitle}>営業時間</p>
+                                    <div className={styles.shopOpenGrid}>
+                                        {Array.isArray(shop.open) ? (
+                                            <>
+                                                {shop.open.map((o, index) => (
+                                                    <Fragment key={index}>
+                                                        <span className={styles.shopOpenDays}>{o.days}</span>
+                                                        <span className={styles.shopOpenMark}>:</span>
+                                                        <span className={styles.shopOpenHours}>{o.hours}</span>
+                                                    </Fragment>
+                                                ))}
+                                            </>
+                                        ) : (
+                                            <p className={styles.shopOpen}>{shop.open}</p>
+                                        )}
+                                        <span className={styles.shopCloseDays}>定休日</span>
+                                        <span className={styles.shopCloseMark}>:</span>
+                                        <span className={styles.shopCloseHours}>{shop.close || "掲載なし"}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </li>
+                        </li>
+                    </Link>
                 ))}
             </ul>
             {isFetchingMore === true && (
