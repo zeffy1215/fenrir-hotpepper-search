@@ -44,15 +44,18 @@ def to_shop_photo(shop: dict) -> ShopPhoto:
         small=photo.get("s")
     )
 
-# お店のジャンルを(コード、ジャンル名)の形のリストに変更
+# お店のジャンルを(コード、ジャンル名)の形のリストに変更(重複消去)
 def to_shop_genre(shop: dict) -> list[ShopGenre]:
-    genres = [shop.get(key, {}) for key in ["genre", "sub_genre"]]
+    genres = [shop.get(key) or {} for key in ["genre", "sub_genre"]]
 
-    return [
+    shop_genres = [
         ShopGenre(code=genre.get("code"), name=genre.get("name"))
         for genre in genres
         if genre.get("code") and genre.get("name")
     ]
+
+    # 同じキーが一つにまとめられることを利用
+    return list({genre.code : genre for genre in shop_genres}.values())
 
 def to_shop_area(shop: dict) -> ShopArea:
     area = shop.get("middle_area")
@@ -79,8 +82,8 @@ def shop_info_fields(shop: dict) -> dict:
         "genre": to_shop_genre(shop),
 
         "catch": shop["catch"],
-        "open": format_open((shop.get("open"))),
-        "close": shop.get("close"),
+        "open": format_open(shop.get("open")),
+        "close": format_close(shop.get("close")),
 
         "photo": to_shop_photo(shop)
     }
