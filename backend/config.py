@@ -23,3 +23,6 @@ class Config:
     # HotPepperのAPIのリクエストタイムアウト時間
     HOTPEPPER_CONNECT_TIMEOUT = 3.5
     HOTPEPPER_READ_TIMEOUT = 7.5
+
+    # ビルドしたフロントエンド(../frontend/dist)のフォルダパス
+    FRONTEND_DIST = os.path.join(current_dir.parent, "frontend", "dist")
