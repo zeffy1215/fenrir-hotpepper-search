@@ -15,6 +15,12 @@ def format_open(text):
         return [ShopOpen(days=day, hours=hour) for (day, hour) in matches]
     return text
 
+def format_close(text):
+    if not text:
+        return None
+
+    return re.sub(r"定休[日]?[:：]?", "", text, count=1)
+
 # あり、なし をboolに変更
 def to_availability(text):
     if not text:
