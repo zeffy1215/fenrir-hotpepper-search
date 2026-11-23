@@ -37,7 +37,7 @@ def to_availability(text):
 
 # 店舗写真URLを整形
 def to_shop_photo(shop: dict) -> ShopPhoto:
-    photo = shop.get("photo", {}).get("pc", {})
+    photo = (shop.get("photo") or {}).get("pc") or {}
     return ShopPhoto(
         large=photo.get("l"),
         medium=photo.get("m"),
@@ -101,9 +101,9 @@ def to_shop_detail(shop: dict) -> ShopDetailResponse:
         lat=shop["lat"],
         lng=shop["lng"],
 
-        budget=shop.get("budget", {}).get("average") if shop.get("budget", {}).get("average") else shop.get("budget", {}).get("name"),
+        budget=(shop.get("budget") or {}).get("average") if (shop.get("budget") or {}).get("average") else (shop.get("budget") or {}).get("name"),
         capacity=shop.get("capacity"),
-        url=shop.get("urls", {}).get("pc"),
+        url=(shop.get("urls") or {}).get("pc"),
         station=shop.get("station_name"),
 
         wedding=to_availability(shop.get("wedding")),
