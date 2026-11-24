@@ -15,6 +15,12 @@ def format_open(text):
         return [ShopOpen(days=day, hours=hour) for (day, hour) in matches]
     return text
 
+def format_close(text):
+    if not text:
+        return None
+
+    return re.sub(r"定休[日]?[:：]?", "", text, count=1)
+
 # あり、なし をboolに変更
 def to_availability(text):
     if not text:
@@ -31,22 +37,25 @@ def to_availability(text):
 
 # 店舗写真URLを整形
 def to_shop_photo(shop: dict) -> ShopPhoto:
-    photo = shop.get("photo", {}).get("pc", {})
+    photo = (shop.get("photo") or {}).get("pc") or {}
     return ShopPhoto(
         large=photo.get("l"),
         medium=photo.get("m"),
         small=photo.get("s")
     )
 
-# お店のジャンルを(コード、ジャンル名)の形のリストに変更
+# お店のジャンルを(コード、ジャンル名)の形のリストに変更(重複消去)
 def to_shop_genre(shop: dict) -> list[ShopGenre]:
-    genres = [shop.get(key, {}) for key in ["genre", "sub_genre"]]
+    genres = [shop.get(key) or {} for key in ["genre", "sub_genre"]]
 
-    return [
+    shop_genres = [
         ShopGenre(code=genre.get("code"), name=genre.get("name"))
         for genre in genres
         if genre.get("code") and genre.get("name")
     ]
+
+    # 同じキーが一つにまとめられることを利用
+    return list({genre.code : genre for genre in shop_genres}.values())
 
 def to_shop_area(shop: dict) -> ShopArea:
     area = shop.get("middle_area")
@@ -73,8 +82,8 @@ def shop_info_fields(shop: dict) -> dict:
         "genre": to_shop_genre(shop),
 
         "catch": shop["catch"],
-        "open": format_open((shop.get("open"))),
-        "close": shop.get("close"),
+        "open": format_open(shop.get("open")),
+        "close": format_close(shop.get("close")),
 
         "photo": to_shop_photo(shop)
     }
@@ -92,9 +101,9 @@ def to_shop_detail(shop: dict) -> ShopDetailResponse:
         lat=shop["lat"],
         lng=shop["lng"],
 
-        budget=shop.get("budget", {}).get("average") if shop.get("budget", {}).get("average") else shop.get("budget", {}).get("name"),
+        budget=(shop.get("budget") or {}).get("average") if (shop.get("budget") or {}).get("average") else (shop.get("budget") or {}).get("name"),
         capacity=shop.get("capacity"),
-        url=shop.get("urls", {}).get("pc"),
+        url=(shop.get("urls") or {}).get("pc"),
         station=shop.get("station_name"),
 
         wedding=to_availability(shop.get("wedding")),

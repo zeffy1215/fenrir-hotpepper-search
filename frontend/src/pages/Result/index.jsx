@@ -5,13 +5,13 @@ import { searchShops } from "../../api/shops";
 import styles from "./Result.module.css";
 
 // 表示順
-const location_order_options = [
+const LOCATION_ORDER_OPTIONS = [
     { value: "1", label: "近い順" },
     { value: "4", label: "おすすめ順" },
 ];
 
 // 表示件数
-const search_count_options = [
+const SEARCH_COUNT_OPTIONS = [
     { value: 10, label: "10件"},
     { value: 30, label: "30件"},
     { value: 50, label: "50件"},
@@ -23,6 +23,13 @@ const selectStyles = {
     control: (base) => ({...base, cursor: "pointer", paddingLeft: "10px"}),
     option: (base) => ({...base, cursor: "pointer"}),
     singleValue: (base) => ({...base, textAlign: "start"}),
+};
+
+// 分割取得数
+const getChunkSize = (total) => {
+    if (total <= 10) return 10;
+    if (total <= 30) return 15;
+    return 25;
 };
 
 function Result() {
@@ -68,13 +75,6 @@ function Result() {
     // クエリパラメータの変更に伴うuseEffect
     useEffect (() => {
         let ignore = false;
-
-        // 分割取得数
-        const getChunkSize = (total) => {
-            if (total <= 10) return 10;
-            if (total <= 30) return 15;
-            return 25;
-        };
 
         const fetchShops = async () => {
             setLoading(true);
@@ -249,8 +249,8 @@ function Result() {
                     <Select 
                         className={styles.orderSelect}
                         styles={selectStyles}
-                        options={location_order_options}
-                        value={location_order_options.find(e => e.value === order)}
+                        options={LOCATION_ORDER_OPTIONS}
+                        value={LOCATION_ORDER_OPTIONS.find(e => e.value === order)}
                         onChange={handleOrderChange}
                         isSearchable={false}
                     ></Select>
@@ -262,8 +262,8 @@ function Result() {
                 <Select
                     className={styles.countSelect}
                     styles={selectStyles}
-                    options={search_count_options}
-                    value={search_count_options.find(e => e.value === count)}
+                    options={SEARCH_COUNT_OPTIONS}
+                    value={SEARCH_COUNT_OPTIONS.find(e => e.value === count)}
                     onChange={handleCountChange}
                     isSearchable={false}
                 ></Select>
@@ -277,37 +277,34 @@ function Result() {
                             <img src={shop.photo.large} alt="店舗画像"></img>
                         </div>
                         <div className={styles.info}>
-                            <Link to={`/detail?id=${shop.id}`} className={styles.shopName}>{shop.name}</Link>
-                            <p className={styles.shopGenre}>
-                                {shop.genre.map((genre) => genre.name).join(" / ")}
-                                {shop.catch && (
-                                    <span className={styles.shopCatch}>{shop.catch}</span>
-                                )}
-                            </p>
-
-                            <p className={styles.shopAccess}>📍{shop.access}</p>
-
-                            <div className={styles.shopOpenBox}>
-                                <p className={styles.shopOpenTitle}>営業時間</p>
-                                <div className={styles.shopOpenGrid}>
-                                    {Array.isArray(shop.open) ? (
-                                        <>
-                                            {shop.open.map((o, index) => (
-                                                <Fragment key={index}>
-                                                    <span className={styles.shopOpenDays}>{o.days}</span>
-                                                    <span className={styles.shopOpenMark}>:</span>
-                                                    <span className={styles.shopOpenHours}>{o.hours}</span>
-                                                </Fragment>
-                                            ))}
-                                        </>
-                                    ) : (
-                                        <p className={styles.shopOpen}>{shop.open}</p>
+                            <Link to={`/detail?id=${shop.id}`} className={styles.detailLink}>
+                                <p className={styles.shopName}>{shop.name}</p>
+                                <p className={styles.shopGenre}>
+                                    {shop.genre.map((genre) => genre.name).join(" / ")}
+                                    {shop.catch && (
+                                        <span className={styles.shopCatch}>{shop.catch}</span>
                                     )}
-                                    <span className={styles.shopCloseDays}>定休日</span>
-                                    <span className={styles.shopCloseMark}>:</span>
-                                    <span className={styles.shopCloseHours}>{shop.close ? shop.close.replace(/定休[日]?[:：]?/, "") : "掲載なし"}</span>
-                                </div>
-                            </div>
+                                </p>
+                            </Link>
+                            <p className={styles.shopAccess}>📍{shop.access}</p>
+                            
+                            <details className={styles.shopOpenBox}>
+                                <summary className={styles.shopOpenTitle}>営業時間を見る</summary>
+                                {Array.isArray(shop.open) ? (
+                                    <>
+                                        {shop.open.map((o, index) => (
+                                            <Fragment key={index}>
+                                                <p className={styles.shopOpenDays}>{o.days}</p>
+                                                <p className={styles.shopOpenHours}>{o.hours}</p>
+                                            </Fragment>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <p className={styles.shopOpen}>{shop.open}</p>
+                                )}
+                                <p className={styles.shopCloseDays}>定休日</p>
+                                <p className={styles.shopCloseHours}>{shop.close || "掲載なし"}</p>
+                            </details>
                         </div>
                     </li>
                 ))}

@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from exceptions.hotpepper_exception import (HotpepperTimeoutError, HotpepperNotFoundError, HotpepperError)
-
 from exceptions.validation_exception import ValidationError
 from services import shop_service
 from dto.shop_search_params import ShopSearchByLocationParamsDto
