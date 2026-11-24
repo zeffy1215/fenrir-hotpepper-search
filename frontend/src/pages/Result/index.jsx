@@ -1,7 +1,8 @@
 import { useState, useEffect, Fragment } from "react";
-import { useSearchParams, Link } from "react-router";
+import { useSearchParams, Link, useNavigate } from "react-router";
 import Select from 'react-select';
 import { searchShops } from "../../api/shops";
+import { getErrorMessage } from "../../untils/errorMessage";
 import styles from "./Result.module.css";
 
 // 表示順
@@ -66,11 +67,11 @@ function Result() {
     // 分割取得終了フラグ
     const [isFetchingMore, setIsFetchingMore] = useState(true);
 
-    const [error, setError] = useState(null);
-
     const currentPage = Math.ceil(start / count);
 
     const [inputPageValue, setInputPageValue] = useState(String(currentPage));
+
+    const navigate = useNavigate();
 
     // クエリパラメータの変更に伴うuseEffect
     useEffect (() => {
@@ -135,8 +136,7 @@ function Result() {
                     // 件数の都合上、これ以上取得するものがなくなったらbreak
                     if (res.available <= currentStart + fetchCount) break;
                 } catch (err) {
-                    console.error(err);
-                    break;
+                    toErrorPage(err);
                 } 
             } 
             setIsFetchingMore(false);
@@ -212,6 +212,10 @@ function Result() {
         })
     }
 
+    function toErrorPage(err) {
+        navigate("/error", { state: {  error: getErrorMessage(err) } });
+    }
+
     if (loading) {
         return (
             <main>
@@ -223,12 +227,6 @@ function Result() {
                 <p>検索中...</p>
             </main>
         );
-    }
-
-    if (error) {
-        return (
-            <p>{error}</p>
-        )
     }
 
     const maxPage = Math.ceil(results.available / count);

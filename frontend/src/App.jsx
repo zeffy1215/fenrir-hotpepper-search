@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import Search from "./pages/Search";
 import Result from "./pages/Result";
 import Detail from "./pages/Detail";
+import Error from "./pages/Error";
 
 import Footer from "./components/Footer";
 
@@ -15,6 +16,7 @@ function App() {
 
                 <Route path="/result" element={<Result />} />
                 <Route path="/detail" element={<Detail />} />
+                <Route path="/error" element={<Error />} />
             </Routes>
 
             <Footer />

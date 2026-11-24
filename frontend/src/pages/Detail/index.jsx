@@ -1,6 +1,7 @@
 import { useState, useEffect, Fragment } from "react";
-import { useSearchParams, Link } from "react-router";
+import { useSearchParams, Link, useNavigate } from "react-router";
 import { detailShop } from "../../api/shops";
+import { getErrorMessage } from "../../untils/errorMessage";
 import styles from "./Detail.module.css";
 
 // 何もしない
@@ -54,6 +55,8 @@ function Detail() {
     const [results, setResults] = useState({});
     const [loading, setLoading] = useState(true);
 
+    const navigate = useNavigate();
+
     // 依存配列なし → ロード時のみ実行
     useEffect (() => {
         let ignore = false;
@@ -64,9 +67,8 @@ function Detail() {
             try {
                 const res = await detailShop(id);
                 if (!ignore) setResults(res);
-                console.log(res);
             } catch (err) {
-                console.error(err);
+                toErrorPage(err);
             } finally {
                 if (!ignore) setLoading(false);
             }
@@ -78,6 +80,11 @@ function Detail() {
             ignore = true;
         }
     }, []);
+
+    function toErrorPage(err) {
+        navigate("/error", { state: {  error: getErrorMessage(err) } });
+    }
+
 
     if (loading) {
         return (
