@@ -272,12 +272,12 @@ function Result() {
             {/* 店舗情報リスト */}
             <ul className={styles.shopList}>
                 {results.shops.map((shop) => (
-                    <Link to={`/detail?id=${shop.id}`} className={styles.detailLink}>
-                        <li key={shop.id} className={styles.shopGrid}>
-                            <div className={styles.photo}>
-                                <img src={shop.photo.large} alt="店舗画像"></img>
-                            </div>
-                            <div className={styles.info}>
+                    <li key={shop.id} className={styles.shopGrid}>
+                        <div className={styles.photo}>
+                            <img src={shop.photo.large} alt="店舗画像"></img>
+                        </div>
+                        <div className={styles.info}>
+                            <Link to={`/detail?id=${shop.id}`} className={styles.detailLink}>
                                 <p className={styles.shopName}>{shop.name}</p>
                                 <p className={styles.shopGenre}>
                                     {shop.genre.map((genre) => genre.name).join(" / ")}
