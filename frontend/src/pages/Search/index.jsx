@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import Select from 'react-select';
 import { getLargeAreaMaster, getMiddleAreaMaster, getSmallAreaMaster } from "../../api/areas";
 import { getGenreMaster  } from "../../api/genres";
+import { getErrorMessage } from "../../untils/errorMessage";
 import styles from "./Search.module.css";
 
 const STORAGE_KEY = "searchConditions";
@@ -170,7 +171,7 @@ function SearchShops() {
                 const res = await getGenreMaster();
                 if (!ignore) setGenreList(res["genres"]);
             } catch (err) {
-                console.error(err);
+                toErrorPage(err);
             } 
         }
 
@@ -191,8 +192,7 @@ function SearchShops() {
                 if (!ignore) setLargeAreaList(res["areas"]);
                 setLargeAreaMessage("選択してください");
             } catch (err) {
-                console.error(err);
-                setLargeAreaMessage("読み込み失敗");
+                toErrorPage(err);
             } finally {
                 setLargeAreaLoading(false);
             }
@@ -249,8 +249,7 @@ function SearchShops() {
                     setMiddleAreaMessage("指定しない");
                 }
             } catch (err) {
-                console.error(err);
-                setMiddleAreaMessage("読み込み失敗");
+                toErrorPage(err);
             } finally {
                 setMiddleAreaLoading(false);
             }
@@ -278,8 +277,7 @@ function SearchShops() {
                     setSmallAreaMessage("指定しない");
                 }
             } catch (err) {
-                console.error(err);
-                setSmallAreaMessage("読み込み失敗");
+                toErrorPage(err);
             } finally {
                 setSmallAreaLoading(false);
             }
@@ -365,6 +363,10 @@ function SearchShops() {
         sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
         navigate(`/result?${params}`);
+    }
+
+    function toErrorPage(err) {
+        navigate("/error", { state: {  error: getErrorMessage(err) } });
     }
 
     if (loading) return (
