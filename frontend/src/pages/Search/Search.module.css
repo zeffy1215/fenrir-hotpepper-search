@@ -24,7 +24,6 @@ fieldset > p {
 .fieldBox {
     display: block;
     width: 90%;
-    min-height: 120px;
     border: solid 1px #a6a29c;
     border-radius: 12px;
     margin: 20px auto;
@@ -60,6 +59,32 @@ legend > span:nth-child(1) {
     margin-right: 10px;
 }
 
+@media (max-width: 767px) {
+    h1 {
+        font-size: 24px;
+        margin: 10px 0 10px 4%;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    legend.searchLegend {
+        font-size: 20px;
+    }
+
+    legend > span:nth-child(1) {
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
+        text-align: center;
+        background-color: #AF323C;
+        color: aliceblue;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+}
+
 /* ラジオボタン, チェックボックス */
 label:has(input[type="radio"]),
 label:has(input[type="checkbox"]) {
@@ -91,8 +116,8 @@ label:has(input:checked) {
 }
 
 .searchTypeLabel {
-    width: calc(100%/2);
-    height: 50px;
+    width: calc(100%/2 + 1px);
+    height: 100%;
     margin: auto;
 }
 
@@ -107,6 +132,17 @@ label:has(input:checked) {
     background-color: #AF323C;
     color: aliceblue;
     font-weight: bold;
+}
+
+@media (max-width: 767px) {
+    .searchTypeBox {
+        height: 35px;
+        margin: 10px 0 5px 0;
+    }
+
+    .searchTypeLabel {
+        font-size: 14px;
+    }
 }
 
 /* 範囲選択 */
@@ -130,6 +166,13 @@ label:has(input:checked) {
     height: 45px;
     padding: 0 15px;
     border-radius: 9999px;
+}
+
+@media (max-width: 767px) {
+    .rangeLabel {
+        font-size: 14px;
+        padding: 0 10px;
+    }
 }
 
 /* エリア */
@@ -158,9 +201,17 @@ fieldset.areaBox > legend {
 .message {
     width: 100%;
     text-align: center;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: normal;
     color: #5A5A5A;
+    margin: 40px 0;
+}
+
+@media (max-width: 767px) {
+    .message {
+        font-size: 18px;
+        margin: 10px 0;
+    }
 }
 
 /* 絞り込み条件 */
@@ -205,6 +256,19 @@ div.conditionsSelectBox label {
     color: #5A5A5A;
 }
 
+@media (max-width: 767px) {
+    .legendMessage {
+        font-size: 12px;
+        margin-left: 15px;
+    }
+
+    div.conditionsSelectBox label {
+        height: 35px;
+        font-size: 14px;
+        padding: 0 12px;
+    }
+}
+
 /* 検索ボタン */
 .searchButtonBox {
     display: flex;
@@ -238,6 +302,9 @@ div.conditionsSelectBox label {
 .searchButton:disabled {
     background: #A0A0A0;
     cursor: not-allowed;
+}
+
+@media (max-width: 767px) {
 }
 
 /* 

@@ -165,6 +165,23 @@ function Result() {
 
         return [1, 2, "...", currentPage-3, currentPage-2, currentPage-1, currentPage, currentPage+1, currentPage+2, currentPage+3, "...", maxPage-1, maxPage];
     };
+
+
+    const mobilePageList = () => {
+        if (maxPage <= 4) {
+            return Array.from({ length: maxPage }, (_, i) => i + 1);
+        }
+
+        if (currentPage <= 2) {
+            return [1, 2, 3, "...", maxPage];
+        }
+
+        if (maxPage - currentPage <= 2) {
+            return [1, "...", maxPage-3, maxPage-2, maxPage-1, maxPage];
+        }
+
+        return [1, "...",  currentPage-1, currentPage, currentPage+1, "...", maxPage];
+    };
     
     // 表示順変更ハンドラー (1ページ目戻す)
     function handleOrderChange(e) {
@@ -237,8 +254,6 @@ function Result() {
 
     return (
         <main>
-            <h2>検索結果</h2>
-
             {/* ツールバー(表示形式) */}
             <div className={styles.resultToolbar}>
                 <p className={styles.resultCount}>{start} ~ {Math.min(start + count - 1, results.available)} 件を表示 / 全 {results.available} 件</p>
@@ -275,34 +290,38 @@ function Result() {
                             <img src={shop.photo.large} alt="店舗画像"></img>
                         </div>
                         <div className={styles.info}>
-                            <Link to={`/detail?id=${shop.id}`} className={styles.detailLink}>
-                                <p className={styles.shopName}>{shop.name}</p>
-                                <p className={styles.shopGenre}>
-                                    {shop.genre.map((genre) => genre.name).join(" / ")}
-                                    {shop.catch && (
-                                        <span className={styles.shopCatch}>{shop.catch}</span>
+                            <div className={styles.linkBox}>
+                                <Link to={`/detail?id=${shop.id}`} className={styles.detailLink}>
+                                    <p className={styles.shopName}>{shop.name}</p>
+                                    <p className={styles.shopGenre}>
+                                        {shop.genre.map((genre) => genre.name).join(" / ")}
+                                        {shop.catch && (
+                                            <span className={styles.shopCatch}>{shop.catch}</span>
+                                        )}
+                                    </p>
+                                </Link>
+                            </div>
+                         
+                            <div className={styles.detailBox}>
+                                <p className={styles.shopAccess}>📍{shop.access}</p>
+                                <details className={styles.shopOpenBox}>
+                                    <summary className={styles.shopOpenTitle}>営業時間を見る</summary>
+                                    {Array.isArray(shop.open) ? (
+                                        <>
+                                            {shop.open.map((o, index) => (
+                                                <Fragment key={index}>
+                                                    <p className={styles.shopOpenDays}>{o.days}</p>
+                                                    <p className={styles.shopOpenHours}>{o.hours}</p>
+                                                </Fragment>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <p className={styles.shopOpen}>{shop.open}</p>
                                     )}
-                                </p>
-                            </Link>
-                            <p className={styles.shopAccess}>📍{shop.access}</p>
-                            
-                            <details className={styles.shopOpenBox}>
-                                <summary className={styles.shopOpenTitle}>営業時間を見る</summary>
-                                {Array.isArray(shop.open) ? (
-                                    <>
-                                        {shop.open.map((o, index) => (
-                                            <Fragment key={index}>
-                                                <p className={styles.shopOpenDays}>{o.days}</p>
-                                                <p className={styles.shopOpenHours}>{o.hours}</p>
-                                            </Fragment>
-                                        ))}
-                                    </>
-                                ) : (
-                                    <p className={styles.shopOpen}>{shop.open}</p>
-                                )}
-                                <p className={styles.shopCloseDays}>定休日</p>
-                                <p className={styles.shopCloseHours}>{shop.close || "掲載なし"}</p>
-                            </details>
+                                    <p className={styles.shopCloseDays}>定休日</p>
+                                    <p className={styles.shopCloseHours}>{shop.close || "掲載なし"}</p>
+                                </details>
+                            </div>
                         </div>
                     </li>
                 ))}
@@ -325,6 +344,27 @@ function Result() {
                 <button className={styles.pageButton} onClick={() => handlePageChange(currentPage-1)} disabled={preButton}>{"<"}</button>
                 <div className={styles.pageList}>
                     {pageList().map((page, index) => (
+                        <Fragment key={index}>
+                            {(Number.isInteger(page) && page !== currentPage) ? (
+                                <button
+                                    className={styles.pageButton}
+                                    onClick={() => handlePageChange(page)}
+                                >
+                                    {page}
+                                </button>
+                            ) : (
+                                <span
+                                    className={styles.pageButton}
+                                    data-current={typeof page === 'number' ? true : undefined}
+                                >
+                                    {page}
+                                </span>
+                            )}
+                        </Fragment>
+                    ))}
+                </div>
+                <div className={styles.mobilePageList}>
+                    {mobilePageList().map((page, index) => (
                         <Fragment key={index}>
                             {(Number.isInteger(page) && page !== currentPage) ? (
                                 <button

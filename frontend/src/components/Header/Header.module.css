@@ -10,3 +10,13 @@
     font-size: 64px;
     user-select: none;
 }
+
+@media (max-width: 1023px) {
+    .titleHeader {
+        margin-top: 20px;
+    }
+
+    .title {
+        font-size: 48px;
+    }
+}
