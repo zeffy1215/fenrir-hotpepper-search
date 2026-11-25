@@ -165,6 +165,23 @@ function Result() {
 
         return [1, 2, "...", currentPage-3, currentPage-2, currentPage-1, currentPage, currentPage+1, currentPage+2, currentPage+3, "...", maxPage-1, maxPage];
     };
+
+
+    const mobilePageList = () => {
+        if (maxPage <= 4) {
+            return Array.from({ length: maxPage }, (_, i) => i + 1);
+        }
+
+        if (currentPage <= 2) {
+            return [1, 2, 3, "...", maxPage];
+        }
+
+        if (maxPage - currentPage <= 2) {
+            return [1, "...", maxPage-3, maxPage-2, maxPage-1, maxPage];
+        }
+
+        return [1, "...",  currentPage-1, currentPage, currentPage+1, "...", maxPage];
+    };
     
     // 表示順変更ハンドラー (1ページ目戻す)
     function handleOrderChange(e) {
@@ -325,6 +342,27 @@ function Result() {
                 <button className={styles.pageButton} onClick={() => handlePageChange(currentPage-1)} disabled={preButton}>{"<"}</button>
                 <div className={styles.pageList}>
                     {pageList().map((page, index) => (
+                        <Fragment key={index}>
+                            {(Number.isInteger(page) && page !== currentPage) ? (
+                                <button
+                                    className={styles.pageButton}
+                                    onClick={() => handlePageChange(page)}
+                                >
+                                    {page}
+                                </button>
+                            ) : (
+                                <span
+                                    className={styles.pageButton}
+                                    data-current={typeof page === 'number' ? true : undefined}
+                                >
+                                    {page}
+                                </span>
+                            )}
+                        </Fragment>
+                    ))}
+                </div>
+                <div className={styles.mobilePageList}>
+                    {mobilePageList().map((page, index) => (
                         <Fragment key={index}>
                             {(Number.isInteger(page) && page !== currentPage) ? (
                                 <button
