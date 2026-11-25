@@ -254,8 +254,6 @@ function Result() {
 
     return (
         <main>
-            <h2>検索結果</h2>
-
             {/* ツールバー(表示形式) */}
             <div className={styles.resultToolbar}>
                 <p className={styles.resultCount}>{start} ~ {Math.min(start + count - 1, results.available)} 件を表示 / 全 {results.available} 件</p>
@@ -292,34 +290,38 @@ function Result() {
                             <img src={shop.photo.large} alt="店舗画像"></img>
                         </div>
                         <div className={styles.info}>
-                            <Link to={`/detail?id=${shop.id}`} className={styles.detailLink}>
-                                <p className={styles.shopName}>{shop.name}</p>
-                                <p className={styles.shopGenre}>
-                                    {shop.genre.map((genre) => genre.name).join(" / ")}
-                                    {shop.catch && (
-                                        <span className={styles.shopCatch}>{shop.catch}</span>
+                            <div className={styles.linkBox}>
+                                <Link to={`/detail?id=${shop.id}`} className={styles.detailLink}>
+                                    <p className={styles.shopName}>{shop.name}</p>
+                                    <p className={styles.shopGenre}>
+                                        {shop.genre.map((genre) => genre.name).join(" / ")}
+                                        {shop.catch && (
+                                            <span className={styles.shopCatch}>{shop.catch}</span>
+                                        )}
+                                    </p>
+                                </Link>
+                            </div>
+                         
+                            <div className={styles.detailBox}>
+                                <p className={styles.shopAccess}>📍{shop.access}</p>
+                                <details className={styles.shopOpenBox}>
+                                    <summary className={styles.shopOpenTitle}>営業時間を見る</summary>
+                                    {Array.isArray(shop.open) ? (
+                                        <>
+                                            {shop.open.map((o, index) => (
+                                                <Fragment key={index}>
+                                                    <p className={styles.shopOpenDays}>{o.days}</p>
+                                                    <p className={styles.shopOpenHours}>{o.hours}</p>
+                                                </Fragment>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <p className={styles.shopOpen}>{shop.open}</p>
                                     )}
-                                </p>
-                            </Link>
-                            <p className={styles.shopAccess}>📍{shop.access}</p>
-                            
-                            <details className={styles.shopOpenBox}>
-                                <summary className={styles.shopOpenTitle}>営業時間を見る</summary>
-                                {Array.isArray(shop.open) ? (
-                                    <>
-                                        {shop.open.map((o, index) => (
-                                            <Fragment key={index}>
-                                                <p className={styles.shopOpenDays}>{o.days}</p>
-                                                <p className={styles.shopOpenHours}>{o.hours}</p>
-                                            </Fragment>
-                                        ))}
-                                    </>
-                                ) : (
-                                    <p className={styles.shopOpen}>{shop.open}</p>
-                                )}
-                                <p className={styles.shopCloseDays}>定休日</p>
-                                <p className={styles.shopCloseHours}>{shop.close || "掲載なし"}</p>
-                            </details>
+                                    <p className={styles.shopCloseDays}>定休日</p>
+                                    <p className={styles.shopCloseHours}>{shop.close || "掲載なし"}</p>
+                                </details>
+                            </div>
                         </div>
                     </li>
                 ))}
