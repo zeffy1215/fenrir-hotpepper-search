@@ -109,7 +109,6 @@ function Detail() {
             <article>
                 {/* ショップヘッダー */}
                 <header className={styles.shopHeader}>
-                    <img className={styles.shopPhoto} src={results.photo.large}></img>
                     <div className={styles.shopNameBox}>
                         <h1 className={styles.shopName}>{results.name}</h1>
                         <p className={styles.shopKana}>{results.name_kana}</p>
@@ -138,6 +137,9 @@ function Detail() {
                                 ))}
                             </div>
                         )}
+                    </div>
+                    <div className={styles.shopPhotoBox}>
+                        <img className={styles.shopPhoto} src={results.photo.large}></img>
                     </div>
                 </header>
 
