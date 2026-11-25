@@ -1,0 +1,12 @@
+.titleHeader {
+    border-bottom: solid 2px #a62a2e;
+}
+
+.title {
+    cursor: pointer;
+    font-family: "Kaisei Tokumin", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 64px;
+    user-select: none;
+}
