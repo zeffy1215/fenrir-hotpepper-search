@@ -5,11 +5,14 @@ import Result from "./pages/Result";
 import Detail from "./pages/Detail";
 import Error from "./pages/Error";
 
+import Header from "./components/Header";
 import Footer from "./components/Footer";
 
 function App() {
     return (
         <BrowserRouter>
+            <Header />
+
             <Routes>
                 {/* トップページを検索画面として進める */}
                 <Route path="/" element={<Search />} /> 
