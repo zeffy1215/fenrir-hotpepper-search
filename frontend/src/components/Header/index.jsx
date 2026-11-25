@@ -13,8 +13,10 @@ function Header() {
 
     return (
         <header className={styles.titleHeader}>
-            <h1 onClick={handlerTitleClick} className={styles.title}>
-                旅先めし
+            <h1 className={styles.title}>
+                <span onClick={handlerTitleClick}>
+                    旅先めし
+                </span>
             </h1>
         </header>
     );
